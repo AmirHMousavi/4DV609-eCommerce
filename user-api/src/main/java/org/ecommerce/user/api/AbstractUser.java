@@ -1,0 +1,23 @@
+package org.ecommerce.user.api;
+
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
+
+@Value.Immutable
+@ImmutableStyle
+@JsonDeserialize(as = User.class)
+public interface AbstractUser {
+
+	@Value.Parameter
+	String getUserId();
+	@Value.Parameter
+	String getPassword();
+	
+	  @Value.Check
+	    default boolean isPasswordOK(String password) {
+	        return getPassword().equals(password);
+	    }
+
+}
