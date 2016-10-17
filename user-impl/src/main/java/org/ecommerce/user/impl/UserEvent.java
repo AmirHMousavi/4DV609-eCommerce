@@ -1,5 +1,6 @@
 package org.ecommerce.user.impl;
 
+import org.ecommerce.user.api.*;
 import com.lightbend.lagom.serialization.Jsonable;
 
 import java.time.Instant;

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
-import org.ecommerce.user.api.User;
+import org.ecommerce.user.api.*;
 import org.ecommerce.user.api.UserService;
 import org.pcollections.PSequence;
 import org.pcollections.TreePVector;
@@ -48,14 +48,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ServiceCall<User, NotUsed> createUser() {
 		return request -> {
-			return UserEntityRef(request.userId).ask(new CreateUser(request)).thenApply(ack -> NotUsed.getInstance());
+			return UserEntityRef(request.getUserId()).ask(CreateUser.of(request)).thenApply(ack -> NotUsed.getInstance());
 		};
 	}
 
 	@Override
-	public ServiceCall<NotUsed, PSequence<User>> getAllUsers() {
+	public ServiceCall<NotUsed, PSequence<String>> getAllUsers() {
 		return request -> {
-			CompletionStage<Object> result = db.selectAll("SELECT * FROM user").thenApply(rows -> {
+			CompletionStage<PSequence<String>> result = db.selectAll("SELECT * FROM user").thenApply(rows -> {
 				List<String> users = rows.stream().map(row -> row.getString("userId")).collect(Collectors.toList());
 				return TreePVector.from(users);
 			});

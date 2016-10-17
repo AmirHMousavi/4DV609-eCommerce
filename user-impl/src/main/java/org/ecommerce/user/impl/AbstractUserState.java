@@ -1,6 +1,6 @@
 package org.ecommerce.user.impl;
 
-import org.ecommerce.user.api.User;
+import org.ecommerce.user.api.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.serialization.Jsonable;

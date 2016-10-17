@@ -1,17 +1,17 @@
 package org.ecommerce.user.impl;
 
+
+import org.ecommerce.user.api.*;
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntity.ReplyType;
-import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
 
 import akka.Done;
-import akka.persistence.PersistenceIdentity;
 
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
+
 
 public interface UserCommand extends Jsonable {
 	// ******************************************************************

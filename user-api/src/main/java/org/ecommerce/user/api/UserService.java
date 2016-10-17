@@ -19,7 +19,7 @@ public interface UserService extends Service {
 
 	ServiceCall<User, NotUsed> createUser();
 
-	ServiceCall<NotUsed, PSequence<User>> getAllUsers();
+	ServiceCall<NotUsed, PSequence<String>> getAllUsers();
 
 	@Override
     default Descriptor descriptor() {
