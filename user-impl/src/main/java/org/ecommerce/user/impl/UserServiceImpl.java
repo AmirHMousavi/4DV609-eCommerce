@@ -1,24 +1,29 @@
 package org.ecommerce.user.impl;
 
-import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
-
-import org.ecommerce.user.api.*;
+import akka.NotUsed;
+import org.ecommerce.user.api.CreateUserRequest;
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.User;
 import org.ecommerce.user.api.UserService;
-import org.pcollections.PSequence;
-import org.pcollections.TreePVector;
-
-import com.google.inject.Inject;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
-import akka.NotUsed;
+import org.pcollections.PSequence;
+import org.pcollections.TreePVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class UserServiceImpl implements UserService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private final PersistentEntityRegistry persistentEntities;
 	private final CassandraSession db;
@@ -35,37 +40,36 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public ServiceCall<NotUsed, User> getUser(String userId, String password) {
-		return request -> {
-			return UserEntityRef(userId).ask(new GetUser()).thenApply(reply -> {
-				if (reply.user.isPresent() && reply.user.get().isPasswordOK(password))
-					return reply.user.get();
+		return (req) -> {
+			return persistentEntities.refFor(UserEntity.class, userId).ask(GetUser.of()).thenApply(reply -> {
+				LOGGER.info(String.format("Looking up user %s", userId));
+				if (reply.getUser().isPresent() && reply.getUser().get().checkPassword(password))
+					return reply.getUser().get();
 				else
-					throw new NotFound("user " + userId + " not found");
+					throw new NotFound(String.format("No user found for id %s", userId));
 			});
 		};
 	}
 
 	@Override
-	public ServiceCall<User, NotUsed> createUser() {
-		return request -> {
-			return UserEntityRef(request.getUserId()).ask(CreateUser.of(request)).thenApply(ack -> NotUsed.getInstance());
-		};
-	}
-
-	@Override
-	public ServiceCall<NotUsed, PSequence<String>> getAllUsers() {
-		return request -> {
-			CompletionStage<PSequence<String>> result = db.selectAll("SELECT * FROM user").thenApply(rows -> {
-				List<String> users = rows.stream().map(row -> row.getString("userId")).collect(Collectors.toList());
+	public ServiceCall<NotUsed, PSequence<User>> getAllUsers() {
+		return (req) -> {
+			LOGGER.info("Looking up all users");
+			CompletionStage<PSequence<User>> result = db.selectAll("SELECT userId FROM user").thenApply(rows -> {
+				List<User> users = rows.stream().map(row -> User.of(row.getUUID("uuid")))
+						.collect(Collectors.toList());
 				return TreePVector.from(users);
 			});
 			return result;
 		};
 	}
 
-	private Object UserEntityRef(String userId) {
-		PersistentEntityRef<UserCommand> ref = persistentEntities.refFor(UserEntity.class, userId);
-		return ref;
+	@Override
+	public ServiceCall<CreateUserRequest, CreateUserResponse> createUser() {
+		return request -> {
+			LOGGER.info("Creating user: {}", request);
+			UUID uuid = UUID.randomUUID();
+			return persistentEntities.refFor(UserEntity.class, uuid.toString()).ask(CreateUser.of(request));
+		};
 	}
-
 }

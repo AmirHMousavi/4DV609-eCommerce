@@ -1,46 +1,42 @@
 package org.ecommerce.user.impl;
 
-
-import org.ecommerce.user.api.*;
-import org.immutables.value.Value;
-
+import org.ecommerce.user.api.CreateUserRequest;
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.User;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
-import com.lightbend.lagom.serialization.Jsonable;
-
-import akka.Done;
-
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
+import com.lightbend.lagom.serialization.CompressedJsonable;
+import com.lightbend.lagom.serialization.Jsonable;
+import org.immutables.value.Value;
 
+import java.util.Optional;
 
 public interface UserCommand extends Jsonable {
-	// ******************************************************************
+
 	@Value.Immutable
 	@ImmutableStyle
 	@JsonDeserialize(as = CreateUser.class)
-	public interface AbstractCreateUser extends UserCommand, PersistentEntity.ReplyType<Done> {
+	public interface AbstractCreateUser
+			extends UserCommand, CompressedJsonable, PersistentEntity.ReplyType<CreateUserResponse> {
+
 		@Value.Parameter
-		User getUser();
+		CreateUserRequest getCreateUserRequest();
 	}
 
-	// ******************************************************************
-	@Value.Immutable(singleton = true, builder = false)
+	@Value.Immutable(singleton = true)
 	@ImmutableStyle
 	@JsonDeserialize(as = GetUser.class)
-	public abstract class AbstractGetUser
-			implements UserCommand, PersistentEntity.ReplyType<GetUserReply> {
-		protected AbstractGetUser() {
+	public interface AbstractGetUser extends UserCommand, CompressedJsonable, PersistentEntity.ReplyType<GetUserReply> {
 
-		}
 	}
 
-	// ******************************************************************
 	@Value.Immutable
 	@ImmutableStyle
 	@JsonDeserialize(as = GetUserReply.class)
 	public interface AbstractGetUserReply extends Jsonable {
+
 		@Value.Parameter
 		Optional<User> getUser();
 	}
-
 }
