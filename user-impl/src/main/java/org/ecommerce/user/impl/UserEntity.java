@@ -1,14 +1,16 @@
 package org.ecommerce.user.impl;
 
 import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.CreateUserRequest;
 import org.ecommerce.user.api.User;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 public class UserEntity extends PersistentEntity<UserCommand, UserEvent, UserState> {
 
@@ -27,12 +29,12 @@ public class UserEntity extends PersistentEntity<UserCommand, UserEvent, UserSta
                 ctx.invalidCommand(String.format("User %s is already created, UserId Should Be Unique", entityId()));
                 return ctx.done();
             } else {
-                User user = User.of(UUID.fromString(entityId()), cmd.getCreateUserRequest().getUUID(),
+                User user = User.of(cmd.getCreateUserRequest().getUserId(),
                         cmd.getCreateUserRequest().getPassword());
                 final UserCreated userCreated = UserCreated.builder().user(user).build();
                 LOGGER.info("Processed CreateUser command into UserCreated event {}", userCreated);
                 return ctx.thenPersist(userCreated, evt ->
-                        ctx.reply(CreateUserResponse.of(userCreated.getUser().getUUID(),userCreated.getUser().getUserId())));
+                        ctx.reply(CreateUserResponse.of(userCreated.getUser().getUserId())));
             }
         });
 

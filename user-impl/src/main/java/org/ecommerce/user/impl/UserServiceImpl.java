@@ -1,25 +1,27 @@
 package org.ecommerce.user.impl;
 
-import akka.NotUsed;
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.ecommerce.user.api.CreateUserRequest;
 import org.ecommerce.user.api.CreateUserResponse;
 import org.ecommerce.user.api.User;
 import org.ecommerce.user.api.UserService;
-import com.lightbend.lagom.javadsl.api.ServiceCall;
-import com.lightbend.lagom.javadsl.api.transport.NotFound;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
-import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
-import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 import org.pcollections.PSequence;
 import org.pcollections.TreePVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
+import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.transport.NotFound;
+import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
+
+import akka.NotUsed;
 
 public class UserServiceImpl implements UserService {
 
@@ -46,20 +48,22 @@ public class UserServiceImpl implements UserService {
 				if (reply.getUser().isPresent() && reply.getUser().get().checkPassword(password))
 					return reply.getUser().get();
 				else
-					throw new NotFound(String.format("No user found for id %s", userId));
+					throw new NotFound(String.format("User %s , User-ID or Password is wrong", userId));
 			});
 		};
 	}
 
 	@Override
-	public ServiceCall<NotUsed, PSequence<User>> getAllUsers() {
+	public ServiceCall<NotUsed, PSequence<CreateUserResponse>> getAllUsers() {
 		return (req) -> {
 			LOGGER.info("Looking up all users");
-			CompletionStage<PSequence<User>> result = db.selectAll("SELECT userId FROM user").thenApply(rows -> {
-				List<User> users = rows.stream().map(row -> User.of(row.getUUID("uuid")))
-						.collect(Collectors.toList());
-				return TreePVector.from(users);
-			});
+			CompletionStage<PSequence<CreateUserResponse>> result = db.selectAll("SELECT userId FROM user")
+					.thenApply(rows -> {
+						List<CreateUserResponse> users = rows.stream()
+								.map(row -> CreateUserResponse.of(row.getString("userId")))
+								.collect(Collectors.toList());
+						return TreePVector.from(users);
+					});
 			return result;
 		};
 	}
@@ -68,8 +72,7 @@ public class UserServiceImpl implements UserService {
 	public ServiceCall<CreateUserRequest, CreateUserResponse> createUser() {
 		return request -> {
 			LOGGER.info("Creating user: {}", request);
-			UUID uuid = UUID.randomUUID();
-			return persistentEntities.refFor(UserEntity.class, uuid.toString()).ask(CreateUser.of(request));
+			return persistentEntities.refFor(UserEntity.class, request.getUserId()).ask(CreateUser.of(request));
 		};
 	}
 }

@@ -1,19 +1,25 @@
 package org.ecommerce.user.impl;
 
-import akka.Done;
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
-import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
-import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSideProcessor;
-import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.CreateUserRequest;
+import org.ecommerce.user.api.User;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.PreparedStatement;
+import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSideProcessor;
+import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
+
+import akka.Done;
 
 public class UserEventProcessor extends CassandraReadSideProcessor<UserEvent> {
 
@@ -51,7 +57,7 @@ public class UserEventProcessor extends CassandraReadSideProcessor<UserEvent> {
         LOGGER.info("Creating Cassandra tables...");
         return session.executeCreateTable(
                 "CREATE TABLE IF NOT EXISTS user ("
-                        + "uuid uuid, userId text, password text, PRIMARY KEY (uuid,userId))")
+                        + "userId text, password text, PRIMARY KEY (userId))")
                 .thenCompose(a -> session.executeCreateTable(
                         "CREATE TABLE IF NOT EXISTS user_offset ("
                                 + "partition int, offset timeuuid, PRIMARY KEY (partition))"));
@@ -59,7 +65,7 @@ public class UserEventProcessor extends CassandraReadSideProcessor<UserEvent> {
 
     private CompletionStage<Done> prepareWriteUser(CassandraSession session) {
         LOGGER.info("Inserting into read-side table user...");
-        return session.prepare("INSERT INTO user (uuid, UserId, password) VALUES (?, ?, ?)").thenApply(ps -> {
+        return session.prepare("INSERT INTO user (userId, password) VALUES (?, ?)").thenApply(ps -> {
             setWriteUser(ps);
             return Done.getInstance();
         });
@@ -95,7 +101,6 @@ public class UserEventProcessor extends CassandraReadSideProcessor<UserEvent> {
      */
     private CompletionStage<List<BoundStatement>> processUserCreated(UserCreated event, UUID offset) {
         BoundStatement bindWriteUser = writeUser.bind();
-        bindWriteUser.setUUID("uuid", event.getUser().getUUID());
         bindWriteUser.setString("userId", event.getUser().getUserId());
         bindWriteUser.setString("password", event.getUser().getPassword());
         BoundStatement bindWriteOffset = writeOffset.bind(offset);

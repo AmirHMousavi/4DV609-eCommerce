@@ -1,13 +1,16 @@
 package org.ecommerce.user.impl;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.CreateUserRequest;
 import org.ecommerce.user.api.User;
+import org.immutables.value.Value;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.serialization.Jsonable;
-import org.immutables.value.Value;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Value.Immutable
 @ImmutableStyle

@@ -13,8 +13,5 @@ import java.util.UUID;
 public interface AbstractCreateUserResponse extends Jsonable {
 
 	@Value.Parameter
-	UUID getUUID();
-	
-	@Value.Parameter
 	String getUserId();
 }

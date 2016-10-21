@@ -1,14 +1,17 @@
 package org.ecommerce.user.impl;
 
+import java.time.Instant;
+
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.CreateUserRequest;
 import org.ecommerce.user.api.User;
+import org.immutables.value.Value;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.serialization.Jsonable;
-import org.immutables.value.Value;
-
-import java.time.Instant;
 
 public interface UserEvent extends Jsonable, AggregateEvent<UserEvent> {
 

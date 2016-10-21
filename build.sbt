@@ -5,6 +5,10 @@ organization in ThisBuild := "org.ecommerce"
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.11.8"
 //*************************************************
+scalaVersion in ThisBuild := "2.11.7"
+
+val immutables = "org.immutables" % "value" % "2.1.14"
+val mockito = "org.mockito" % "mockito-core" % "1.10.19"
 
 //****************************************************
 
@@ -12,7 +16,7 @@ scalaVersion in ThisBuild := "2.11.8"
 lazy val itemApi = project("item-api")
   .settings(
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslApi,
+    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
 
@@ -20,7 +24,7 @@ lazy val itemApi = project("item-api")
   .enablePlugins(LagomJava)
   .settings(
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslPersistence,
+    libraryDependencies ++= Seq(lagomJavadslPersistence, immutables,
       lagomJavadslImmutables, lagomJavadslTestKit
     )
   )
@@ -31,7 +35,7 @@ lazy val itemApi = project("item-api")
 lazy val userApi = project("user-api")
   .settings(
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslApi,
+    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
 
@@ -39,7 +43,7 @@ lazy val userApi = project("user-api")
   .enablePlugins(LagomJava)
   .settings(
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslPersistence,
+    libraryDependencies ++= Seq(lagomJavadslPersistence, immutables,
       lagomJavadslImmutables, lagomJavadslTestKit
     )
   )

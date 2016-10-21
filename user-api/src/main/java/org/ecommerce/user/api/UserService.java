@@ -2,6 +2,7 @@ package org.ecommerce.user.api;
 
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.Descriptor;
+import com.lightbend.lagom.javadsl.
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
@@ -18,7 +19,7 @@ public interface UserService extends Service {
 	/**
 	 * Example: curl http://localhost:9000/api/items
 	 */
-	ServiceCall<NotUsed, PSequence<User>> getAllUsers();
+	ServiceCall<NotUsed, PSequence<CreateUserResponse>> getAllUsers();
 
 	/**
 	 * Example: curl -v -H "Content-Type: application/json" -X POST -d '{"name":
@@ -39,9 +40,9 @@ public interface UserService extends Service {
 	@Override
 	default Descriptor descriptor() {
 		return Service.named("userservice")
-				.withCalls(Service.restCall(Method.GET, "/api/items/:id/:password", this::getUser),
-						Service.restCall(Method.GET, "/api/items", this::getAllUsers),
-						Service.restCall(Method.POST, "/api/items", this::createUser))
+				.withCalls(Service.restCall(Method.GET, "/api/users/:id/:password", this::getUser),
+						Service.restCall(Method.GET, "/api/users/list", this::getAllUsers),
+						Service.restCall(Method.POST, "/api/users", this::createUser))
 				.withAutoAcl(true);
 	}
 }
