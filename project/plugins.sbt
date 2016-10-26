@@ -8,3 +8,5 @@ addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.1.0")
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "3.0.0")
 // The ConductR plugin
 addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.9")
+//add the play framework
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.5")
