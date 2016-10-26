@@ -1,14 +1,15 @@
 package org.ecommerce.user.impl;
 
+import org.ecommerce.user.api.CreateUserRequest;
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.User;
+import org.ecommerce.user.api.AbstractUser;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.ecommerce.user.api.CreateUserRequest;
-import org.ecommerce.user.api.CreateUserResponse;
-import org.ecommerce.user.api.User;
 import org.ecommerce.user.api.UserService;
 import org.pcollections.PSequence;
 import org.pcollections.TreePVector;

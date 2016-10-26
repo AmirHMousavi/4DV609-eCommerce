@@ -51,6 +51,46 @@ lazy val userApi = project("user-api")
   .dependsOn(userApi)
 
 //*****************************************************
+//***********************************************************************************
+lazy val messageApi = project("message-api")
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
+      lagomJavadslImmutables, lagomJavadslJackson)
+  )
+
+lazy val messageImpl = project("message-impl")
+  .enablePlugins(LagomJava)
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(lagomJavadslPersistence, immutables,
+      lagomJavadslImmutables, lagomJavadslTestKit
+    )
+  )
+  .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
+  .dependsOn(messageApi)
+  
+//************************************************************************************
+  
+  lazy val rankingApi = project("ranking-api")
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
+      lagomJavadslImmutables, lagomJavadslJackson)
+  )
+
+lazy val rankingImpl = project("ranking-impl")
+  .enablePlugins(LagomJava)
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(lagomJavadslPersistence, immutables,
+      lagomJavadslImmutables, lagomJavadslTestKit
+    )
+  )
+  .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
+  .dependsOn(rankingApi)
+    
+//****************************************************************************************************
 def project(id: String) = Project(id, base = file(id))
   .settings(eclipseSettings: _*)
   .settings(javacOptions in compile ++= Seq("-encoding", "UTF-8", "-source", "1.8", "-target", "1.8", "-Xlint:unchecked", "-Xlint:deprecation"))
