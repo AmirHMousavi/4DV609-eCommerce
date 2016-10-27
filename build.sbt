@@ -13,33 +13,15 @@ val mockito = "org.mockito" % "mockito-core" % "1.10.19"
 //****************************************************
 
 //*****************************************************
-lazy val itemApi = project("item-api")
-  .settings(
-    version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
-      lagomJavadslImmutables, lagomJavadslJackson),
-      libraryDependencies += filters
-  )
 
-  lazy val itemImpl = project("item-impl")
-  .enablePlugins(LagomJava)
-  .settings(
-    version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslPersistence, immutables,
-      lagomJavadslImmutables, lagomJavadslTestKit
-    ),
-      libraryDependencies += filters
-  )
-  .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
-  .dependsOn(itemApi)
+// **** ITEM USED TO BE HERE *********
 
 //*****************************************************
 lazy val userApi = project("user-api")
   .settings(
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(lagomJavadslApi, immutables,
-      lagomJavadslImmutables, lagomJavadslJackson),
-      libraryDependencies += filters
+      lagomJavadslImmutables, lagomJavadslJackson,filters)
   )
 
   lazy val userImpl = project("user-impl")
@@ -47,9 +29,8 @@ lazy val userApi = project("user-api")
   .settings(
     version := "1.0-SNAPSHOT",
     libraryDependencies ++= Seq(lagomJavadslPersistence, immutables,
-      lagomJavadslImmutables, lagomJavadslTestKit
-    ),
-      libraryDependencies += filters
+      lagomJavadslImmutables, lagomJavadslTestKit, filters
+    )
   )
   .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
   .dependsOn(userApi)
