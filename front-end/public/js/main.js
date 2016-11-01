@@ -9,8 +9,8 @@ requirejs.config({
       'angular-animate' : ['../lib/angularjs/angular-animate'],
       'angular-aria' : ['../lib/angularjs/angular-aria.min'],
       'jquery' : ['https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min'],
-      'angular-material' : ['../lib/angularjs/angular-material.min'],
-      'angular-material-icons' : ['../lib/angularjs/angular-material-icons.min']
+      'angular-material' : ['../lib/angular-material/angular-material.min', /*'http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min'*/],
+      'angular-material-icons' : [/*'../lib/angularjs/angular-material-icons.min'*/'http://cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.7.1/angular-material-icons.min']
   },
   shim: {
       'angular': {
@@ -45,11 +45,13 @@ require(['angular', './controllers', './directives', './filters', './services', 
     angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'ngRoute', 'ngMaterial']).
       config(['$routeProvider','$mdThemingProvider', function($routeProvider, $mdThemingProvider) {
         $mdThemingProvider.theme('default')
-            .primaryPalette('deep-purple')
+            .primaryPalette('indigo')
             .accentPalette('teal');
 
         $routeProvider.when('/view1', {templateUrl: 'partials/partial1.html', controller: controllers.MyCtrl1});
         $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: controllers.MyCtrl2});
+        $routeProvider.when('/login', {templateUrl: 'partials/login.html', controller: controllers.LoginCtrl});
+        $routeProvider.when('/register', {templateUrl: 'partials/login.html', controller: controllers.LoginCtrl});
         $routeProvider.otherwise({redirectTo: '/view1'});
       }]);
 
@@ -58,5 +60,5 @@ require(['angular', './controllers', './directives', './filters', './services', 
 });
 
 function logMeIn() {
-    alert('login was clicked');
+    window.location.href = '#/login'
 }

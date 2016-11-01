@@ -1,1 +1,70 @@
-<h2> LOGIN IS HERE SIR </h2>
+<div layout = "row" layout-align ="center center">
+    <div id = "loginCard" layout = "column" flex = "45" flex-sm = "90" ng-show = "showLoginForm">
+        <!-- LOGIN FORM -->
+        <md-card layout-align = "center">
+            <md-card-header layout-align = "space-around">
+                <div layout = "column" layout-align = "center center">
+                    <md-toolbar class="md-hue-2">
+                        <div class="md-toolbar-tools" layout-align="center center">
+                            <span class = "md-headline header_txt" > LOG IN </span>
+                        </div>
+                    </md-toolbar>
+                </div>
+            </md-card-header>
+            <md-card-content layout = "row" layout-align = "center center">
+                <div layout = "row" layout-align = "center center" flex = "100">
+                    <div layout = "column" flex = "60">
+                        <md-input-container>
+                            <label>Username</label>
+                            <input type="text" ng-model="username">
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Password</label>
+                            <input type="password" ng-model="password">
+                        </md-input-container>
+                    </div>
+                </div>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="center center">
+                <div layout = "column" flex = "60">
+                    <md-button class="md-raised md-primary" ng-click = "login()">Login</md-button>
+                    <md-button ng-click = "toggleForm()">Register</md-button>
+                </div>
+            </md-card-actions>
+        </md-card>
+    </div>
+    <div id = "loginCard" layout = "column" flex = "45" flex-sm = "90" ng-show = "!showLoginForm">
+        <!-- REGISTER FORM -->
+        <md-card layout-align = "center">
+            <md-card-header layout-align = "space-around">
+                <div layout = "column" layout-align = "center center">
+                    <md-toolbar class="md-hue-2">
+                        <div class="md-toolbar-tools" layout-align="center center">
+                            <span class = "md-headline header_txt" > REGISTER </span>
+                        </div>
+                    </md-toolbar>
+                </div>
+            </md-card-header>
+            <md-card-content layout = "row" layout-align = "center center">
+                <div layout = "row" layout-align = "center center" flex = "100">
+                    <div layout = "column" flex = "60">
+                        <md-input-container>
+                            <label>Username</label>
+                            <input type="text" ng-model="username">
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Password</label>
+                            <input type="password" ng-model="password">
+                        </md-input-container>
+                    </div>
+                </div>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="center center">
+                <div layout = "column" flex = "60">
+                    <md-button class="md-raised md-primary" ng-click = "register()" >Register</md-button>
+                    <md-button ng-click = "toggleForm()" >Login</md-button>
+                </div>
+            </md-card-actions>
+        </md-card>
+    </div>
+</div>
