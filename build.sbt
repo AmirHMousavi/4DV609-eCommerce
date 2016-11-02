@@ -17,8 +17,14 @@ val mockito = "org.mockito" % "mockito-core" % "1.10.19"
 lazy val itemApi = project("item-api")
   .settings(
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
-      lagomJavadslImmutables, lagomJavadslJackson)
+    libraryDependencies ++= {
+	val akkaV = "2.4.10"
+	Seq(
+	  lagomJavadslApi,  immutables,
+      lagomJavadslImmutables, lagomJavadslJackson,
+	  "com.typesafe.akka" %% "akka-actor" % akkaV,
+    "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaV)}
   )
 
 lazy val itemImpl = project("item-impl")
@@ -154,4 +160,4 @@ lazy val eclipseSettings = Seq(
   unmanagedSourceDirectories in Compile := Seq((javaSource in Compile).value),
   unmanagedSourceDirectories in Test := Seq((javaSource in Test).value)
 )
-lagomCassandraCleanOnStart in ThisBuild := false
+lagomCassandraCleanOnStart in ThisBuild := true
