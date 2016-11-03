@@ -1,4 +1,4 @@
-<div id = "accountTabs">
+<div id = "accountTabs" ng-if = "isLoggedIn">
     <md-tabs>
         <md-tab ng-click = "changeAccountView('profile')"><span class="tabItemLabel">Profile</span>
         </md-tab>
@@ -64,4 +64,8 @@
                 </md-button>
             </div>
     </div>
+</div>
+<div id = "accountWrapperNotLoggedIn" ng-if = "!isLoggedIn">
+    <span class = "md-display-3 title"> YOU ARE NOT LOGGED IN YET </span>
+    <a class = "md-raised md-primary" href = "#/login"> LOGIN </a>
 </div>

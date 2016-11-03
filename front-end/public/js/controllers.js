@@ -24,7 +24,7 @@ controllers.MyCtrl2 = function()
 }
 controllers.MyCtrl2.$inject = [];
 
-controllers.LoginCtrl = function($scope, Config, User) 
+controllers.LoginCtrl = function($scope, $rootScope, Config, User) 
 {
     $scope.showLoginForm = true;
 
@@ -44,7 +44,7 @@ controllers.LoginCtrl = function($scope, Config, User)
             if (status == 200) {
                 //the login was successful we can store the data in local cookie
                 //then we should redirect to the other view where we show the user account
-               // alert(User.getUserName());
+               $rootScope.currentUser = User.getUserName();
                window.location = "#/item";
             }
             else {
@@ -71,7 +71,7 @@ controllers.LoginCtrl = function($scope, Config, User)
 
 }
 
-controllers.LoginCtrl.$inject = ['$scope','Config','User'];
+controllers.LoginCtrl.$inject = ['$scope', '$rootScope', 'Config','User'];
 
 controllers.ItemsCtrl = function($scope, Item) 
 {
@@ -90,13 +90,19 @@ controllers.ItemsCtrl = function($scope, Item)
 
 controllers.ItemsCtrl.$inject = ['$scope', 'Item'];
 
-controllers.AccountCtrl = function($scope, User, Item, $mdToast) 
+controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast) 
 {
+    $scope.isLoggedIn = false;
+
     $scope.myItems = [];
     $scope.showAccountPart = 'profile';
 
     $scope.username = User.getUserName();
     $scope.password = User.getPassword();
+
+    $scope.itemName = "";
+    $scope.itemDescription = "";
+    $scope.itemPrice = "";
 
     $scope.changeAccountView = function(view) {
         $scope.showAccountPart = view;
@@ -104,16 +110,24 @@ controllers.AccountCtrl = function($scope, User, Item, $mdToast)
 
     //triggered on page load
     angular.element(document).ready(function () {
-        Item.getMyItems($scope.username, function(response) {
-            console.log('these are my items ::');
-            console.log(response);
-            $scope.myItems = response;
-        });
+        if ($rootScope.currentUser !== undefined && $rootScope.currentUser !== '') {
+            Item.getMyItems($scope.username, function(response) {
+                $scope.myItems = response;
+            });
+            $scope.isLoggedIn = true;
+             //alert('is logged in :: ' + $scope.isLoggedIn + " current user :" + $rootScope.currentUser);
+        }
+        else {
+            //alert('not logged in');
+            //they are not supposed to see this page
+            //document.location = "#/";
+            $scope.isLoggedIn = false;
+        }
+        
     });
 
     //triggered when we want to upload a new item
     $scope.uploadItem = function() {
-        //alert(' name:' +$scope.itemName + " description:" + $scope.itemDescription + " price:" + $scope.itemPrice);
         Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, $scope.itemPrice, 'photo', function(newItem) {
             if (newItem !== undefined) {
                 //it was successful we can show a message that it was successful
@@ -128,7 +142,7 @@ controllers.AccountCtrl = function($scope, User, Item, $mdToast)
     };
 }
 
-controllers.AccountCtrl.$inject = ['$scope', 'User', 'Item', '$mdToast'];
+controllers.AccountCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
 
 return controllers;
 
