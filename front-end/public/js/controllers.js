@@ -90,22 +90,45 @@ controllers.ItemsCtrl = function($scope, Item)
 
 controllers.ItemsCtrl.$inject = ['$scope', 'Item'];
 
-controllers.AccountCtrl = function($scope, User) 
+controllers.AccountCtrl = function($scope, User, Item, $mdToast) 
 {
+    $scope.myItems = [];
     $scope.showAccountPart = 'profile';
 
     $scope.username = User.getUserName();
     $scope.password = User.getPassword();
-    //$scope.currentUser = User.getUserOBJ();
-
-    //console.log(currentUser);
 
     $scope.changeAccountView = function(view) {
         $scope.showAccountPart = view;
-    }
+    };
+
+    //triggered on page load
+    angular.element(document).ready(function () {
+        Item.getMyItems($scope.username, function(response) {
+            console.log('these are my items ::');
+            console.log(response);
+            $scope.myItems = response;
+        });
+    });
+
+    //triggered when we want to upload a new item
+    $scope.uploadItem = function() {
+        //alert(' name:' +$scope.itemName + " description:" + $scope.itemDescription + " price:" + $scope.itemPrice);
+        Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, $scope.itemPrice, 'photo', function(newItem) {
+            if (newItem !== undefined) {
+                //it was successful we can show a message that it was successful
+                //empty out the inputs
+                $scope.itemName = "";
+                $scope.itemDescription = "";
+                $scope.itemPrice = "";
+                $mdToast.show($mdToast.simple().content("Item was uploaded successfuly!"));
+                $scope.myItems.push(newItem)
+            }
+        });
+    };
 }
 
-controllers.AccountCtrl.$inject = ['$scope', 'User'];
+controllers.AccountCtrl.$inject = ['$scope', 'User', 'Item', '$mdToast'];
 
 return controllers;
 

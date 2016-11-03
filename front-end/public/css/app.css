@@ -46,6 +46,12 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
 {
   margin-top: 20px;
 }
+#noItemsWrapper
+{
+  opacity: 0.78;
+  margin-top: 60px;
+}
+
 .title
 {
   opacity: 0.78;

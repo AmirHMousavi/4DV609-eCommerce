@@ -114,7 +114,8 @@ angular.module('myApp.services', [])
    * This is the Item factory / class
    */
   .factory('Item', ['$http', 'Config', function($http, Config){
-      var Item = {    
+      var Item = { 
+
           /**
            * the thype of request
            */
@@ -129,6 +130,43 @@ angular.module('myApp.services', [])
                   url : Config.url + this.type
               }).then(function successCallback(response) {
                   callback(response.data);
+              }).then(function errorCallback(response) {
+                  console.log('this is the error ::' + response);
+              });
+          },
+          
+          /**
+           * getMyItems
+           * @return Array
+           */
+           getMyItems : function(userId, callback) {
+               $http({
+                  method : 'GET',
+                  url : Config.url + this.type + '/all/' + userId
+              }).then(function successCallback(response) {
+                  callback(response.data);
+              }).then(function errorCallback(response) {
+                  console.log('this is the error ::' + response);
+              });
+            },
+
+          /**
+           * uploadItem 
+           * @return bool
+           */
+          uploadItem : function(userName, itemName, itemDescription, itemPrice, itemImage, callback) {
+              //prepare the object
+              var newItem = {userId:userName, name:itemName, description:itemDescription, photo:itemImage, price:itemPrice};
+              console.log('this is the new item to be added');
+              console.log(newItem);
+              $http({
+                  method : 'POST',
+                  url : Config.url + this.type,
+                  data : newItem
+              }).then(function successCallback(response) {
+                  console.log('this is the response of ADDING a new item ::');
+                  console.log(response);
+                  callback(newItem);
               }).then(function errorCallback(response) {
                   console.log('this is the error ::' + response);
               });

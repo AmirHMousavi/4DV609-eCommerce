@@ -1,5 +1,4 @@
-
-<div id = "itemsWrapper" layout = "column" flex = "100">
+<div id = "itemsWrapper" layout = "column" flex = "100"  ng-if = "items.length > 0">
     <div id="filter" layout="row" layout-wrap flex-offset = "10"> 
         <div layout="row" layout-wrap flex="80" flex-offset="10" layout="row">
             <div flex="2">
@@ -34,4 +33,7 @@
             </md-card-actions>
         </md-card>
     </div>
+</div>
+<div id = "noItemsWrapper" layout = "column" flex = "100" ng-if = "!items.length >0" layout-align = "center center">
+    <div layout = "column" flex = "100"><span class = "md-display-2">NO ITEMS AVAILABLE</span></div>
 </div>
