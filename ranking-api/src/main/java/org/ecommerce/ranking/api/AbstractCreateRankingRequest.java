@@ -8,13 +8,11 @@ import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.serialization.Jsonable;
 
-
 @Value.Immutable
 @ImmutableStyle
 @JsonDeserialize
 public interface AbstractCreateRankingRequest extends Jsonable {
 
-	
 	@Value.Parameter
 	String getUserId();
 
@@ -24,10 +22,9 @@ public interface AbstractCreateRankingRequest extends Jsonable {
 	@Value.Parameter
 	BigDecimal getRating();
 
-	
 	@Value.Check
 	default void check() {
-		Preconditions.checkState(getRating().signum() <=5 ,"Rating must be between 1 to 5");
+		Preconditions.checkState(getRating().signum() <= 5, "Rating must be between 1 to 5");
 	}
 
 }

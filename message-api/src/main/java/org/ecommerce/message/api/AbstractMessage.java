@@ -11,13 +11,19 @@ import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 public interface AbstractMessage {
 
 	@Value.Parameter
-	UUID getId();
+	UUID getMessageId();
 
 	@Value.Parameter
 	String getUserId();
 
 	@Value.Parameter
 	UUID getItemId();
+
+	@Value.Parameter
+	UUID getIsSold();
+
+	// @Value.Parameter
+	// String getSellerId();
 
 	@Value.Parameter
 	String getMessage();

@@ -32,4 +32,24 @@ public interface RankingEvent extends Jsonable, AggregateEvent<RankingEvent> {
 			return Instant.now();
 		}
 	}
+	
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize
+	interface AbstractRankingChanged extends RankingEvent {
+		@Override
+		default AggregateEventTag<RankingEvent> aggregateTag() {
+			return RankingEventTag.INSTANCE;
+		}
+
+		@Value.Parameter
+		Ranking getRanking();
+
+		@Value.Default
+		default Instant getTimestamp() {
+			return Instant.now();
+		}
+	}
+	
+	
 }

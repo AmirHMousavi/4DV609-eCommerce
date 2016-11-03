@@ -14,7 +14,7 @@ public interface AbstractCreateRankingResponse extends Jsonable {
 
 
 		@Value.Parameter
-		UUID getId();
+		UUID getRankingId();
 	
 	}
 	

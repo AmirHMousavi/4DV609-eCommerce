@@ -1,6 +1,8 @@
 package org.ecommerce.ranking.impl;
 
 import org.ecommerce.ranking.api.Ranking;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.serialization.Jsonable;

@@ -3,6 +3,8 @@ package org.ecommerce.ranking.impl;
 import org.ecommerce.ranking.api.Ranking;
 import org.ecommerce.ranking.api.CreateRankingRequest;
 import org.ecommerce.ranking.api.CreateRankingResponse;
+
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.immutables.value.Value;
@@ -12,6 +14,8 @@ import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
+
+import akka.Done;
 
 public interface RankingCommand extends Jsonable {
 
@@ -30,6 +34,17 @@ public interface RankingCommand extends Jsonable {
 	@JsonDeserialize
 	public interface AbstractGetRanking
 			extends RankingCommand, CompressedJsonable, PersistentEntity.ReplyType<GetRankingReply> {
+
+	}
+
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize
+	public interface AbstractChangeRanking
+			extends RankingCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+
+		@Value.Parameter
+		BigDecimal getRating();
 
 	}
 

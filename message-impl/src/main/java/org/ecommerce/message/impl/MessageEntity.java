@@ -3,7 +3,6 @@ package org.ecommerce.message.impl;
 import org.ecommerce.message.api.Message;
 import org.ecommerce.message.api.CreateMessageResponse;
 import org.ecommerce.message.api.CreateMessageRequest;
-import org.ecommerce.message.api.AbstractMessage;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -33,11 +32,12 @@ public class MessageEntity extends PersistentEntity<MessageCommand, MessageEvent
 				CreateMessageRequest req = cmd.getCreateMessageRequest();
 
 				Message message = Message.of(UUID.fromString(entityId()), req.getUserId(), req.getItemId(),
-						req.getMessage());
+						req.getIsSold(), req.getMessage());
+				// req.getSellerId(),);
 				final MessageCreated messageCreated = MessageCreated.builder().message(message).build();
 				LOGGER.info("Processed CreateMessage command into MessageCreated event {}", messageCreated);
 				return ctx.thenPersist(messageCreated,
-						evt -> ctx.reply(CreateMessageResponse.of(messageCreated.getMessage().getId())));
+						evt -> ctx.reply(CreateMessageResponse.of(messageCreated.getMessage().getMessageId())));
 			}
 		});
 
@@ -55,6 +55,7 @@ public class MessageEntity extends PersistentEntity<MessageCommand, MessageEvent
 		b.setReadOnlyCommandHandler(GetMessage.class, (cmd, ctx) -> {
 			LOGGER.info("Processed GetMessage command, returned message");
 			ctx.reply(GetMessageReply.of(state().getMessage()));
+
 		});
 
 		return b.build();

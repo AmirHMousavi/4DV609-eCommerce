@@ -10,8 +10,7 @@ import com.lightbend.lagom.serialization.Jsonable;
 @ImmutableStyle
 @JsonDeserialize
 public interface AbstractCreateMessageRequest extends Jsonable {
-	
-	
+
 	@Value.Parameter
 	String getUserId();
 
@@ -19,7 +18,12 @@ public interface AbstractCreateMessageRequest extends Jsonable {
 	UUID getItemId();
 
 	@Value.Parameter
-	String getMessage();
+	UUID getIsSold();
 
+	// @Value.Parameter
+	// String getSellerId();
+
+	@Value.Parameter
+	String getMessage();
 
 }

@@ -15,7 +15,7 @@ import scala.reflect.internal.Trees.Try;
 public interface AbstractRanking {
 
 	@Value.Parameter
-	UUID getId();
+	UUID getRankingId();
 
 	@Value.Parameter
 	String getUserId();

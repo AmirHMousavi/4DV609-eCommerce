@@ -13,7 +13,7 @@ import com.lightbend.lagom.serialization.Jsonable;
 public interface AbstractCreateMessageResponse extends Jsonable {
 	
 		@Value.Parameter
-		UUID getId();
+		UUID getMessageId();
 
 	}
 
