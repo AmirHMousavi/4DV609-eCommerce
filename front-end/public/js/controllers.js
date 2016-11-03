@@ -24,7 +24,7 @@ controllers.MyCtrl2 = function()
 }
 controllers.MyCtrl2.$inject = [];
 
-controllers.LoginCtrl = function($scope, $rootScope, Config, User) 
+controllers.LoginCtrl = function($scope, $rootScope, $mdToast, Config, User) 
 {
     $scope.showLoginForm = true;
 
@@ -45,6 +45,7 @@ controllers.LoginCtrl = function($scope, $rootScope, Config, User)
                 //the login was successful we can store the data in local cookie
                 //then we should redirect to the other view where we show the user account
                $rootScope.currentUser = User.getUserName();
+               $rootScope.isLoggedIn = true;
                window.location = "#/item";
             }
             else {
@@ -61,17 +62,35 @@ controllers.LoginCtrl = function($scope, $rootScope, Config, User)
     $scope.register = function() {
         if ($scope.username != undefined && $scope.password != undefined && $scope.username.length > 0 && $scope.password.length > 0) {
             User.register($scope.username, $scope.password, function(response) {
-                alert(response);
+                if (response.userId.length > 0) {
+                    //user was registered successfully
+                    $mdToast.show($mdToast.simple().content("You were registered successfully!"));
+                    User.logIn($scope.username, $scope.password, function(status) {
+                        if (status == 200) {
+                            //the login was successful we can store the data in local cookie
+                            //then we should redirect to the other view where we show the user account
+                        $rootScope.currentUser = User.getUserName();
+                        $rootScope.isLoggedIn = true;
+                        window.location = "#/item";
+                        }
+                        else {
+                            //something went wrong we should notify the user
+                            //username or password is wrong
+                            alert(status);
+                        }
+                    });
+                }
             });
         }
         else {
+            alert('Something went wrong...');
             return;
         }
     }
 
 }
 
-controllers.LoginCtrl.$inject = ['$scope', '$rootScope', 'Config','User'];
+controllers.LoginCtrl.$inject = ['$scope', '$rootScope', '$mdToast', 'Config','User'];
 
 controllers.ItemsCtrl = function($scope, Item) 
 {
@@ -97,7 +116,7 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast)
     $scope.myItems = [];
     $scope.showAccountPart = 'profile';
 
-    $scope.username = User.getUserName();
+    $scope.username = User.getLoggedUserName();
     $scope.password = User.getPassword();
 
     $scope.itemName = "";
@@ -110,7 +129,8 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast)
 
     //triggered on page load
     angular.element(document).ready(function () {
-        if ($rootScope.currentUser !== undefined && $rootScope.currentUser !== '') {
+        //alert($rootScope.currentUser);
+        if ($rootScope.isLoggedIn) {
             Item.getMyItems($scope.username, function(response) {
                 $scope.myItems = response;
             });

@@ -55,6 +55,31 @@ require(['angular', './controllers', './directives', './filters', './services', 
         $routeProvider.when('/items', {templateUrl: 'partials/items.html', controller: controllers.ItemsCtrl});
         $routeProvider.when('/account', {templateUrl: 'partials/account.html', controller: controllers.AccountCtrl});
         $routeProvider.otherwise({redirectTo: '/items'});
+      }])
+      .controller('mainController', ['$scope','$rootScope','$location','$mdToast','$mdDialog','User', function($scope,$rootScope,$location,$mdToast,$mdDialog, User){
+            $rootScope.currentUser = "";
+            $rootScope.isLoggedIn = false;
+
+            angular.element(document).ready(function () {
+                if (User.getLoggedUserName() != undefined && User.getLoggedUserName != null) {
+                    //we have a logged user
+                    $rootScope.currentUser = User.getLoggedUserName();
+                    $rootScope.isLoggedIn = true;
+                }
+                else {
+                    $rootScope.currentUser = "";
+                    $rootScope.isLoggedIn = false;
+                }
+            });
+
+            //logout triggered
+            $scope.logMeOut = function() {
+                ///log user out
+                User.logout();
+                $rootScope.currentUser = "";
+                $rootScope.isLoggedIn = false;
+                document.location = '#/';
+            }
       }]);
 
     angular.bootstrap(document, ['myApp']);

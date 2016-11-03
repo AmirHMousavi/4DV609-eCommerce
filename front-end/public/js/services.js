@@ -12,6 +12,7 @@ angular.module('myApp.services', [])
   //value('version', '0.1')
   .factory('Config', [function(){
     var Config = {
+      //this should be the hosting URL for NOW is localhost
       url : "http://localhost:9000/api/"
     };
 
@@ -37,13 +38,11 @@ angular.module('myApp.services', [])
         },
 
         getUserName : function() {
-            if (this.username != "") {
-                return this.username;
-            }
-            else {
-                //check if we have it locally
-                return localStorage.getItem("username");
-            }
+            return this.username;
+        },
+
+        getLoggedUserName : function () {
+            return localStorage.getItem("username");
         },
 
         setPassword : function(inputPassword) {
@@ -102,9 +101,16 @@ angular.module('myApp.services', [])
                 data : jsonObject
             }).then(function successCallback(response) {
                 console.log(response);
+                callback(response.data);
               }, function errorCallback(response) {
                   console.log(response);
+                  callback(response);
             });
+        },
+
+        logout : function() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('password');
         }
 
       }

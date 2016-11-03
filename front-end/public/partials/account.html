@@ -1,4 +1,4 @@
-<div id = "accountTabs" ng-if = "isLoggedIn">
+<div id = "accountTabs" ng-show = "isLoggedIn">
     <md-tabs>
         <md-tab ng-click = "changeAccountView('profile')"><span class="tabItemLabel">Profile</span>
         </md-tab>
@@ -8,7 +8,7 @@
         </md-tab>
     </md-tabs>
 </div>
-<div id = "accountWrapper">
+<div id = "accountWrapper" ng-show = "isLoggedIn">
     <div ng-show = "showAccountPart == 'profile'" layout = "column" flex = "60" flex-offset = "10">
         <md-input-container class="md-block" flex-gt-xs>
             <label>Your Username</label>
@@ -20,7 +20,7 @@
         </md-input-container>
     </div>
     <div ng-show = "showAccountPart == 'items'" layout = "column" flex = "60" flex-offset = "10">
-        <div layout = "row" layout-wrap flex-offset = "10" flex-offset-sm = "0">
+        <div layout = "row" layout-wrap flex-offset = "10" flex-offset-sm = "0" ng-show = "myItems.length > 0">
             <md-card ng-repeat="item in myItems" flex = "30" flex-sm = "100" >
                 <md-card-title layout-align = "center center">
                     <md-card-title-text layout-align = "center center">
@@ -41,6 +41,9 @@
                     </div>
                 </md-card-actions>
             </md-card>
+        </div>
+        <div layout = "row" layout-wrap flex-offset = "5" flex-offset-sm = "0" ng-show = "myItems.length == 0">
+            <span class = "md-display-2 title"> You don't have any item added yet </span>
         </div>
     </div>
     <div ng-show = "showAccountPart == 'create'" layout = "column" flex = "60" flex-offset = "10">
@@ -65,7 +68,7 @@
             </div>
     </div>
 </div>
-<div id = "accountWrapperNotLoggedIn" ng-if = "!isLoggedIn">
-    <span class = "md-display-3 title"> YOU ARE NOT LOGGED IN YET </span>
-    <a class = "md-raised md-primary" href = "#/login"> LOGIN </a>
+<div id = "accountWrapperNotLoggedIn" ng-show = "!isLoggedIn" layout-wrap layout = "column">
+    <center><span class = "md-display-3 title"> YOU ARE NOT LOGGED IN YET </span></center>
+    <center><a class = "md-raised md-primary" href = "#/login"> LOGIN </a></center>
 </div>

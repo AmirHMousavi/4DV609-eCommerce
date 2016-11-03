@@ -8,19 +8,25 @@
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0-rc1/angular-material.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
 </head>
-<body id="body">
+<body id="body" ng-controller="mainController" ng-cloak>
   <md-toolbar class= "row" flex = "100">
     <div class="md-toolbar-tools" class= "row" flex = "100">
       <div flex = "20"><span>E-Commerce App</span></div>
         <!-- fill up the space between left and right area -->
       <span flex></span>
-      <md-tabs md-dynamic-height md-border-bottom flex="80" md-center-tabs>
+      <md-tabs md-dynamic-height md-border-bottom flex="80" md-center-tabs ng-if = "currentUser !== ''">
           <md-tab class "tabItemLabel md-accent" label="ITEMS"  onClick = "goTo('#/items')">
           </md-tab>
           <md-tab  label="MY ACCOUNT" onClick = "goTo('#/account')">
           </md-tab>
       </md-tabs>
-      <md-button onClick = "logMeIn()">Login/Register</md-button>
+      <div ng-show = "isLoggedIn === false">
+        <md-button onClick = "logMeIn()">Login/Register</md-button>
+      </div>
+      <div ng-show = "isLoggedIn === true" layout = "row">
+          <div id = "loggedUserName"><span class = "md-subhead">{{currentUser}}</span></div>
+          <md-button ng-click = "logMeOut()">Logout</md-button>
+      </div>
     </div>
   </md-toolbar>
   <!--<ul class="menu">

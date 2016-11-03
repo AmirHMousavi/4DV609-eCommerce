@@ -64,3 +64,11 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
 {
   margin-top: 20px;
 }
+#loggedUserName
+{
+  padding-top: 4px;
+}
+#accountWrapperNotLoggedIn
+{
+  margin-top: 50px;
+}
