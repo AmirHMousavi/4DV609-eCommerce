@@ -52,7 +52,9 @@ require(['angular', './controllers', './directives', './filters', './services', 
         $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: controllers.MyCtrl2});
         $routeProvider.when('/login', {templateUrl: 'partials/login.html', controller: controllers.LoginCtrl});
         $routeProvider.when('/register', {templateUrl: 'partials/login.html', controller: controllers.LoginCtrl});
-        $routeProvider.otherwise({redirectTo: '/view1'});
+        $routeProvider.when('/items', {templateUrl: 'partials/items.html', controller: controllers.ItemsCtrl});
+        $routeProvider.when('/account', {templateUrl: 'partials/account.html', controller: controllers.AccountCtrl});
+        $routeProvider.otherwise({redirectTo: '/items'});
       }]);
 
     angular.bootstrap(document, ['myApp']);
@@ -61,4 +63,10 @@ require(['angular', './controllers', './directives', './filters', './services', 
 
 function logMeIn() {
     window.location.href = '#/login'
+}
+
+function goTo(location) {
+    //if (location == 'account') {
+        window.location.href = location;
+    //}
 }

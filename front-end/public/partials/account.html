@@ -1,0 +1,23 @@
+<div id = "accountTabs">
+    <md-tabs>
+        <md-tab ng-click = "changeAccountView('profile')"><span class="tabItemLabel">Profile</span>
+        </md-tab>
+        <md-tab ng-click = "changeAccountView('items')"><span class="tabItemLabel">My Items</span>
+        </md-tab>
+        <md-tab ng-click = "changeAccountView('create')"><span class="tabItemLabel">Create Item</span>
+        </md-tab>
+    </md-tabs>
+</div>
+<div id = "accountWrapper">
+    <div ng-show = "showAccountPart == 'profile'">
+        <span class = "md-display-2"> PROFILE HERE </span>
+        <span>{{username}}</span>
+        <span>{{password}}</span>
+    </div>
+    <div ng-show = "showAccountPart == 'items'">
+        <span class = "md-display-2"> ITEMS HERE </span>
+    </div>
+    <div ng-show = "showAccountPart == 'create'">
+        <span class = "md-display-2"> CREATE HERE </span>
+    </div>
+</div>

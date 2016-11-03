@@ -33,3 +33,28 @@
 {
     background-color: #EEEEEE;
 }
+
+.tabItemLabel
+{
+  color: white;
+}
+md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {
+  color: #fff !important;
+}
+
+#itemsWrapper
+{
+  margin-top: 20px;
+}
+.title
+{
+  opacity: 0.78;
+}
+.tabItemLabel
+{
+  color: black;
+}
+#accountWrapper
+{
+  margin-top: 20px;
+}

@@ -1,0 +1,37 @@
+
+<div id = "itemsWrapper" layout = "column" flex = "100">
+    <div id="filter" layout="row" layout-wrap flex-offset = "10"> 
+        <div layout="row" layout-wrap flex="80" flex-offset="10" layout="row">
+            <div flex="2">
+                <ng-md-icon icon="search" style="fill:gray" size="32"></ng-md-icon>
+            </div>
+            <div flex="90">
+                <md-input-container md-no-float class="md-block">
+                     <input ng-model="search" placeholder="Search......">
+               </md-input-container>
+           </div>
+       </div>
+    </div>
+    <div layout = "row" layout-wrap flex-offset = "10" flex-offset-sm = "0">
+        <md-card ng-repeat="item in items | filter:search" flex = "30" flex-sm = "100" >
+            <md-card-title layout-align = "center center">
+                <md-card-title-text layout-align = "center center">
+                    <center><span class="md-headline title">{{item.name}}</span></center>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content layout = "column" layout-align = "center center">
+                <div flex = "100"> 
+                    <img src="http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" heignt = "150" width="150" />
+                </div>
+                <div flex = "100">
+                    <span class="md-title"> {{item.price | currency}}</span>
+                </div>
+            </md-card-content>
+            <md-card-actions layout = "row">
+                <div layout = "row" flex = "100">
+                    <md-button flex = "100" class = "md-primary md-raised">View Details</md-button>
+                </div>
+            </md-card-actions>
+        </md-card>
+    </div>
+</div>

@@ -21,10 +21,12 @@ angular.module('myApp.services', [])
 
   .factory('User', ['$http', 'Config', function($http, Config){
 
-      var User = {
+    var User = {
 
         //the request type
         type : 'users',
+
+        userOBJ : {},
 
         username : "",
 
@@ -35,7 +37,13 @@ angular.module('myApp.services', [])
         },
 
         getUserName : function() {
-            return this.username;
+            if (this.username != "") {
+                return this.username;
+            }
+            else {
+                //check if we have it locally
+                return localStorage.getItem("username");
+            }
         },
 
         setPassword : function(inputPassword) {
@@ -43,7 +51,27 @@ angular.module('myApp.services', [])
         },
 
         getPassword : function() {
-            return this.password;
+            if (this.password != "") {
+                return this.password;
+            }
+            else {
+                return localStorage.getItem("password");
+            }
+        },
+
+        storeUserLocally : function(obj) {
+            //store it locally
+            if (typeof(Storage) !== "undefined") {
+                localStorage.setItem("username", this.getUserName());
+                localStorage.setItem("password", this.getPassword());
+            } else {
+                // Sorry! No Web Storage support..
+                console.log('no local storage available');
+            }
+        },
+
+        getUserOBJ : function() {
+            return $this.userOBJ;
         },
 
         //sends the username and password for authentication
@@ -54,6 +82,9 @@ angular.module('myApp.services', [])
             }).then(function successCallback(response) {
                 User.setUsername(response.data.userId);
                 User.setPassword(response.data.password);
+
+                User.storeUserLocally(response.data);
+
                 callback(response.status);
               }, function errorCallback(response) {
                 // called asynchronously if an error occurs
@@ -65,7 +96,6 @@ angular.module('myApp.services', [])
 
         register : function(inputUsername, inputPassword, callback) {
             var jsonObject = angular.toJson({"userId" : inputUsername, "password" : inputPassword});
-
             $http({
                 method: 'POST',
                 url: Config.url + this.type,
@@ -78,8 +108,34 @@ angular.module('myApp.services', [])
         }
 
       }
-
       return User;
+  }])
+  /**
+   * This is the Item factory / class
+   */
+  .factory('Item', ['$http', 'Config', function($http, Config){
+      var Item = {    
+          /**
+           * the thype of request
+           */
+          type : 'items',
+          /**
+           *  getAllItems 
+           *  @return Array of items
+           */
+          getAllItems  : function(callback) {
+              $http({
+                  method : 'GET',
+                  url : Config.url + this.type
+              }).then(function successCallback(response) {
+                  callback(response.data);
+              }).then(function errorCallback(response) {
+                  console.log('this is the error ::' + response);
+              });
+          }
+      }
+
+      return Item;
   }]);
 
 
