@@ -1,5 +1,7 @@
 package org.ecommerce.item.impl;
 
+import org.ecommerce.user.api.UserService;
+
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import java.io.File;
@@ -39,12 +41,15 @@ public class ItemServiceImpl implements ItemService {
 
 	private final PersistentEntityRegistry persistentEntities;
 	private final CassandraSession db;
+	private final UserService userService;
 
 	@Inject
-	public ItemServiceImpl(PersistentEntityRegistry persistentEntities, CassandraReadSide readSide,
+	public ItemServiceImpl(UserService userService,
+			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide,
 			CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
+		this.userService = userService;
 
 		persistentEntities.register(ItemEntity.class);
 		readSide.register(ItemEventProcessor.class);
@@ -187,6 +192,13 @@ public class ItemServiceImpl implements ItemService {
 
 			}
 			return completedFuture(null);
+		};
+	}
+	
+	@Override
+	public ServiceCall<Source<ByteString,?>, String> uploadImage(String id){
+		return req -> {
+			return completedFuture("Done, file is uploaded!");
 		};
 	}
 }

@@ -50,6 +50,8 @@ public interface ItemService extends Service {
     ServiceCall<ByteString, String> createImage(String id);
     ServiceCall<NotUsed, ByteString> getImage(String id);
     
+    ServiceCall<Source<ByteString,?>, String> uploadImage(String id);
+    
 //    ServiceCall<String, Accumulator<ByteString, Done>> createImage();
     //ServiceCall<String, String> createImage();
     
@@ -75,7 +77,7 @@ public interface ItemService extends Service {
                 Service.restCall(Method.GET,  "/api/items", this::getAllItems),
                 Service.restCall(Method.GET,  "/api/items/all/:id", this::getAllItemsBy),
                 Service.restCall(Method.POST, "/api/items", this::createItem),
-                
+                Service.restCall(Method.POST, "/api/items/upload/:id", this::uploadImage),
                 Service.restCall(Method.POST, "/api/items/image/:id", this::createImage)
                 .withRequestSerializer(
                 		new ByteStringMessage()),

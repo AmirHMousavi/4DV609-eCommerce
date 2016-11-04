@@ -1,5 +1,7 @@
 package org.ecommerce.item.impl;
 
+import org.ecommerce.user.api.UserService;
+
 import org.ecommerce.item.api.CreateItemRequest;
 import org.ecommerce.item.api.CreateItemResponse;
 import org.ecommerce.item.api.Item;
@@ -14,5 +16,6 @@ public class ItemModule extends AbstractModule implements ServiceGuiceSupport {
     protected void configure() {
         bindServices(serviceBinding(
                 ItemService.class, ItemServiceImpl.class));
+        bindClient(UserService.class);
     }
 }

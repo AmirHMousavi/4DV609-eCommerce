@@ -36,7 +36,7 @@ lazy val itemImpl = project("item-impl")
     )
   )
   .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
-  .dependsOn(itemApi)
+  .dependsOn(itemApi, userApi)
 
 //*****************************************************
 lazy val userApi = project("user-api")
