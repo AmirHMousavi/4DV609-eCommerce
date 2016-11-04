@@ -1,5 +1,6 @@
 package org.ecommerce.user.api;
 
+import akka.Done;
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
@@ -10,8 +11,7 @@ import org.pcollections.PSequence;
 public interface UserService extends Service {
 
 	/**
-	 * Example: curl
-	 * http://localhost:9000/api/users/user1/1234
+	 * Example: curl http://localhost:9000/api/users/user1/1234
 	 */
 	ServiceCall<NotUsed, User> getUser(String id, String password);
 
@@ -21,10 +21,12 @@ public interface UserService extends Service {
 	ServiceCall<NotUsed, PSequence<CreateUserResponse>> getAllUsers();
 
 	/**
-	 * Example: curl -v -H "Content-Type: application/json" -X POST -d '{"userId":
-	 * "user1", "password": "1234"}' http://localhost:9000/api/users
+	 * Example: curl -v -H "Content-Type: application/json" -X POST -d
+	 * '{"userId": "user1", "password": "1234"}' http://localhost:9000/api/users
 	 */
 	ServiceCall<CreateUserRequest, CreateUserResponse> createUser();
+
+	ServiceCall<NotUsed, Done> logOutUser(String id);
 
 	/**
 	 * Other useful URLs:
@@ -39,9 +41,10 @@ public interface UserService extends Service {
 	@Override
 	default Descriptor descriptor() {
 		return Service.named("userservice")
-				.withCalls(Service.restCall(Method.GET, "/api/users/:id/:password", this::getUser),
+				.withCalls(Service.restCall(Method.GET, "/api/users/login/:id/:password", this::getUser),
 						Service.restCall(Method.GET, "/api/users/list", this::getAllUsers),
-						Service.restCall(Method.POST, "/api/users", this::createUser))
+						Service.restCall(Method.POST, "/api/users", this::createUser),
+						Service.restCall(Method.GET, "/api/users/logout/:id", this::logOutUser))
 				.withAutoAcl(true);
 	}
 }

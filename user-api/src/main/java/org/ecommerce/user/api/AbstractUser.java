@@ -1,13 +1,9 @@
 package org.ecommerce.user.api;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.base.Preconditions;
-import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
-import com.lightbend.lagom.serialization.Jsonable;
-
 import org.immutables.value.Value;
-import java.math.BigDecimal;
-import java.util.UUID;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 
 @Value.Immutable
 @ImmutableStyle
@@ -19,6 +15,9 @@ public interface AbstractUser {
 
 	@Value.Parameter
 	String getPassword();
+	
+	@Value.Parameter
+	boolean getAuthStatus();
 
 	@Value.Check
 	default boolean checkPassword(String password) {

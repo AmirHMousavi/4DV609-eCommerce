@@ -1,10 +1,12 @@
 package org.ecommerce.user.impl;
 
-import org.ecommerce.user.api.CreateUserResponse;
-import org.ecommerce.user.api.CreateUserRequest;
-import org.ecommerce.user.api.User;
 import java.util.Optional;
+
+import org.ecommerce.user.api.CreateUserRequest;
+import org.ecommerce.user.api.CreateUserResponse;
+import org.ecommerce.user.api.User;
 import org.immutables.value.Value;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
@@ -22,6 +24,18 @@ public interface UserCommand extends Jsonable {
 		@Value.Parameter
 		CreateUserRequest getCreateUserRequest();
 	}
+	
+	
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize(as = ChangeStatus.class)
+	public interface AbstractChangeStatus
+			extends UserCommand, CompressedJsonable, PersistentEntity.ReplyType<User> {
+
+		@Value.Parameter
+		boolean getChangeStatusRequest();
+	}
+	
 
 	@Value.Immutable(singleton = true)
 	@ImmutableStyle

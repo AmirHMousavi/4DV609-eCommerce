@@ -1,9 +1,5 @@
 package org.ecommerce.user.impl;
 
-import org.ecommerce.user.api.CreateUserResponse;
-import org.ecommerce.user.api.CreateUserRequest;
-import org.ecommerce.user.api.User;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
