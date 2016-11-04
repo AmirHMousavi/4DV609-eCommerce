@@ -6,6 +6,10 @@ import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
+import com.lightbend.lagom.javadsl.server.ServerServiceCall;
+
+import java.util.function.Function;
+
 import org.pcollections.PSequence;
 
 public interface UserService extends Service {
@@ -26,7 +30,22 @@ public interface UserService extends Service {
 	 */
 	ServiceCall<CreateUserRequest, CreateUserResponse> createUser();
 
+	/**
+	 * log out
+	 * @param id
+	 * @return Done
+	 */
 	ServiceCall<NotUsed, Done> logOutUser(String id);
+
+	/**
+	 * check if user is authenticated
+	 * @param id
+	 * @param serviceCall
+	 * @return serviceCall
+	 */
+	<Request, Response> ServerServiceCall<Request, Response> authenticated(String id,
+			Function<User, ServerServiceCall<Request, Response>> serviceCall);
+	
 
 	/**
 	 * Other useful URLs:

@@ -42,7 +42,7 @@ lazy val itemImpl = project("item-impl")
 lazy val userApi = project("user-api")
   .settings(
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= Seq(lagomJavadslApi, immutables,
+    libraryDependencies ++= Seq(lagomJavadslApi,lagomJavadslServer, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
 
