@@ -15,10 +15,10 @@
         <!-- fill up the space between left and right area -->
       <span flex></span>
       <md-tabs md-dynamic-height md-border-bottom flex="80" md-center-tabs ng-if = "currentUser !== ''">
-          <md-tab class "tabItemLabel md-accent" label="ITEMS"  onClick = "goTo('#/items')">
-          </md-tab>
-          <md-tab  label="MY ACCOUNT" onClick = "goTo('#/account')">
-          </md-tab>
+          <md-tab class "tabItemLabel md-accent" label="ITEMS"  onClick = "goTo('#/items')"></md-tab>
+          <md-tab  label="MY ACCOUNT" onClick = "goTo('#/account')"></md-tab>
+          <md-tab  label="DOCUMENTATION" onClick = "goTo('#/documentation')"></md-tab>
+          <md-tab  label="MONOLITH BREAKERS" onClick = "goTo('#/us')"></md-tab>
       </md-tabs>
       <div ng-show = "isLoggedIn === false">
         <md-button onClick = "logMeIn()">Login/Register</md-button>

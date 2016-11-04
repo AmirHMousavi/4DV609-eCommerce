@@ -77,7 +77,7 @@ angular.module('myApp.services', [])
         logIn : function(inputUsername, inputPassword, callback) {
             $http({
                 method: 'GET',
-                url: Config.url + this.type + '/' + inputUsername + '/' + inputPassword
+                url: Config.url + this.type + '/' + 'login/' + inputUsername + '/' + inputPassword
             }).then(function successCallback(response) {
                 User.setUsername(response.data.userId);
                 User.setPassword(response.data.password);
@@ -114,6 +114,7 @@ angular.module('myApp.services', [])
         }
 
       }
+      
       return User;
   }])
   /**

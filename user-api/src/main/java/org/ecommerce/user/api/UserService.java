@@ -60,10 +60,10 @@ public interface UserService extends Service {
 	@Override
 	default Descriptor descriptor() {
 		return Service.named("userservice")
-				.withCalls(Service.restCall(Method.GET, "/api/users/login/:id/:password", this::getUser),
-						Service.restCall(Method.GET, "/api/users/list", this::getAllUsers),
-						Service.restCall(Method.POST, "/api/users", this::createUser),
-						Service.restCall(Method.GET, "/api/users/logout/:id", this::logOutUser))
-				.withAutoAcl(true);
+		.withCalls(Service.restCall(Method.GET, "/api/users/login/:id/:password", this::getUser),
+				Service.restCall(Method.GET, "/api/users/list", this::getAllUsers),
+				Service.restCall(Method.POST, "/api/users", this::createUser),
+				Service.restCall(Method.GET, "/api/users/logout/:id", this::logOutUser))
+		.withAutoAcl(true);
 	}
 }

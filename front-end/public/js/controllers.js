@@ -69,9 +69,9 @@ controllers.LoginCtrl = function($scope, $rootScope, $mdToast, Config, User)
                         if (status == 200) {
                             //the login was successful we can store the data in local cookie
                             //then we should redirect to the other view where we show the user account
-                        $rootScope.currentUser = User.getUserName();
-                        $rootScope.isLoggedIn = true;
-                        window.location = "#/item";
+                            $rootScope.currentUser = User.getUserName();
+                            $rootScope.isLoggedIn = true;
+                            window.location = "#/item";
                         }
                         else {
                             //something went wrong we should notify the user
@@ -129,16 +129,13 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast)
 
     //triggered on page load
     angular.element(document).ready(function () {
-        //alert($rootScope.currentUser);
         if ($rootScope.isLoggedIn) {
             Item.getMyItems($scope.username, function(response) {
                 $scope.myItems = response;
             });
             $scope.isLoggedIn = true;
-             //alert('is logged in :: ' + $scope.isLoggedIn + " current user :" + $rootScope.currentUser);
         }
         else {
-            //alert('not logged in');
             //they are not supposed to see this page
             //document.location = "#/";
             $scope.isLoggedIn = false;
@@ -163,6 +160,18 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast)
 }
 
 controllers.AccountCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
+
+controllers.DocumentationCtrl = function($scope, $rootScope, User, Item, $mdToast) {
+    //
+}
+
+controllers.DocumentationCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
+
+controllers.UsCtrl = function($scope, $rootScope, User, Item, $mdToast) {
+    //
+}
+
+controllers.UsCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
 
 return controllers;
 
