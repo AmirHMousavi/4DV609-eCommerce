@@ -22,7 +22,7 @@
             <hr />
             <span class = "md-subhead">{{item.description}}</span>
             <br /><br /><hr />
-            <md-button class="md-raised md-accent" ng-click = "iWantToBuy()"  ng-disabled = "!canBuy"> Buy </md-button>
+            <md-button class="md-raised md-accent"  ng-if = "!isMyItem" ng-click = "iWantToBuy()"  ng-disabled = "!canBuy"> Buy </md-button>
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "displaySendMessage">
             <textarea ng-model = "message" id = "message" cols = "35" rows = "10" wrap = "soft" placeholder = "Write your message here. Lagom loves you"></textarea>

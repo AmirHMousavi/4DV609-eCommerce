@@ -120,6 +120,8 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
         $scope.canBuy = false;
         $scope.displaySendMessage = false;
         $scope.message = "";
+        //if the user is seeing the item he uploaded himself
+        $scope.isMyItem = false;
 
         if ($rootScope.isLoggedIn) {
             $scope.canBuy = true; //we have a logged user
@@ -127,6 +129,11 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
 
         Item.getItemWithID(selectedItemID, function(item) {
             $scope.item = item;
+            if (item.userId == User.getLoggedUserName()) {
+                $scope.isMyItem = true;
+            }
+            console.log('this is the item sir');
+            console.log(item);
         });
 
         //close the mdDialog popup
@@ -221,7 +228,7 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
             Item.getItemWithID(selectedItemID, function(item) {
                 $scope.item = item;
             });
-            
+
             //we should get the messages for this item
             Message.getMessagesForItemID(selectedItemID, function(messages) {
                 console.log("THIS IS THE MESSAGE >>>>>>>>>>>>>>");
@@ -236,6 +243,11 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
             });
         });
         
+        //the seller clicks one of the messages to sell to the person
+        $scope.sellItem = function(itemID) {
+            alert('this is the item id :' + itemID);
+        };
+
         //close the mdDialog popup
         $scope.closePopUp = function() {
             $mdDialog.cancel();
