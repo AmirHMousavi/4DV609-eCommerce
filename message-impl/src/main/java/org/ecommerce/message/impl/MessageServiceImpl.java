@@ -16,6 +16,7 @@ import org.pcollections.TreePVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
@@ -117,6 +118,22 @@ public class MessageServiceImpl implements MessageService {
 						return "-1";
 					});
 			return result;
+		};
+	}
+
+	@Override
+	public ServiceCall<NotUsed, PSequence<Message>> getAllMessagesByUserId(String userId) {
+		return (req) -> {
+			LOGGER.info("Looking up all messages");
+			CompletionStage<PSequence<Message>> theResult = db
+					.selectAll("SELECT * FROM message WHERE userId = ?  ALLOW FILTERING", userId).thenApply(rows -> {
+						List<Message> messages = rows.stream()
+								.map(row -> Message.of(row.getUUID("messageId"), row.getString("userId"),
+										row.getUUID("itemId"), row.getString("isSold"), row.getString("message")))
+								.collect(Collectors.toList());
+						return TreePVector.from(messages);
+					});
+			return theResult;
 		};
 	}
 }

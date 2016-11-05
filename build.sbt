@@ -161,3 +161,4 @@ lazy val eclipseSettings = Seq(
   unmanagedSourceDirectories in Test := Seq((javaSource in Test).value)
 )
 lagomCassandraCleanOnStart in ThisBuild := false
+lagomServiceLocatorEnabled in ThisBuild := true
