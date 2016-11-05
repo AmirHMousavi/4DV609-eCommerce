@@ -23,7 +23,19 @@
             </div>
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-if = "!showNoMessagesForItem">
-            <center><span class = "md-display-3 title"> HERE ARE THE MESSAGES SIR </span></center>
+            <md-list flex>
+                <div ng-repeat = "message in messages">
+                    <md-subheader class="md-no-sticky">Message sender: {{message.userId}}</md-subheader>
+                    <md-list-item class="md-2-line">
+                        <img ng-src="{{todos[0].face}}?20" class="md-avatar" alt="{{todos[0].who}}" />
+                        <div class="md-list-item-text">
+                            <h3>Message Header</h3>
+                            <p>{{message.message}}</p>
+                        </div>
+                    </md-list-item>
+                    <md-divider ></md-divider>
+                </div>
+            </md-list>
         </div>
     </div>
 </md-dialog>

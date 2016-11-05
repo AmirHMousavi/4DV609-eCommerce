@@ -144,9 +144,6 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
             var userID = User.getLoggedUserName();
             //send the message
             Message.sendMessageForItemID(userID, selectedItemID, $scope.message, function(message) {
-                 console.log(' the message was sent ....');
-                 console.log(message);
-                 console.log('end of the new message information');
                  $mdToast.show($mdToast.simple().content("Message sent successfully!"));
                  $scope.displaySendMessage = false;
             });
@@ -191,7 +188,8 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
 
     //triggered when we want to upload a new item
     $scope.uploadItem = function() {
-        Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, $scope.itemPrice, 'photo', function(newItem) {
+        Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, 
+            $scope.itemPrice, 'photo', function(newItem) {
             if (newItem !== undefined) {
                 //it was successful we can show a message that it was successful
                 //empty out the inputs
@@ -223,7 +221,7 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
             Item.getItemWithID(selectedItemID, function(item) {
                 $scope.item = item;
             });
-
+            
             //we should get the messages for this item
             Message.getMessagesForItemID(selectedItemID, function(messages) {
                 console.log("THIS IS THE MESSAGE >>>>>>>>>>>>>>");
