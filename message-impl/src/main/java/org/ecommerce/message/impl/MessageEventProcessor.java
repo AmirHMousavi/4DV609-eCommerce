@@ -54,7 +54,7 @@ public class MessageEventProcessor extends CassandraReadSideProcessor<MessageEve
 		LOGGER.info("Creating Cassandra tables...");
 		return session
 				.executeCreateTable("CREATE TABLE IF NOT EXISTS message ("
-						+ "messageId uuid, userId text, itemId uuid, isSold uuid, message text, PRIMARY KEY (messageId, itemId))")
+						+ "messageId uuid, userId text, itemId uuid, isSold text, message text, PRIMARY KEY (messageId, itemId))")
 				.thenCompose(a -> session.executeCreateTable("CREATE TABLE IF NOT EXISTS message_offset ("
 						+ "partition int, offset timeuuid, PRIMARY KEY (partition))"));
 	}
@@ -101,7 +101,7 @@ public class MessageEventProcessor extends CassandraReadSideProcessor<MessageEve
 		bindWriteMessage.setString("userId", event.getMessage().getUserId());
 		bindWriteMessage.setUUID("itemId", event.getMessage().getItemId());
 		//bindWriteMessage.setString("sellerId", event.getMessage().getSellerId());
-		bindWriteMessage.setUUID("isSold", event.getMessage().getIsSold());
+		bindWriteMessage.setString("isSold", event.getMessage().getIsSold());
 		bindWriteMessage.setString("message", event.getMessage().getMessage());
 		BoundStatement bindWriteOffset = writeOffset.bind(offset);
 		LOGGER.info("Persisted Message {}", event.getMessage());

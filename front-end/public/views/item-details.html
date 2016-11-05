@@ -1,0 +1,32 @@
+<md-dialog id = "itemDetails" aria-label = "Item Details" flex = "60" layout = "column">
+    <md-toolbar class= "row" flex = "100">
+        <div class="md-toolbar-tools" class= "row" flex = "100">
+            <div flex = "70"><span>Details of {{item.name}}</span></div>
+                <!-- fill up the space between left and right area -->
+            <span flex></span>
+            <div>
+                <md-button class="md-fab md-mini md-primary" aria-label="exit" ng-click = "closePopUp()"> X </md-button>
+            </div>
+        </div>
+    </md-toolbar>
+    <div flex = "100" layout = "row" layout-margin>
+        <div id = "itemImgDiv" layout = "column" flex = "50" layout-margin>
+            <img src = "http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" height = "200px" width = "100%"/>
+            <br />
+            <div flex-offset = "5"><span class = "md-subhead title">Seller : {{item.userId}}</span></div>
+        </div>
+        <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "!displaySendMessage">
+            <div><span class = "md-title title">Price : {{item.price |currency}}</span></div>
+            <br /><br />
+            <span class = "md-subhead title">DESCRIPTION:</span>
+            <hr />
+            <span class = "md-subhead">{{item.description}}</span>
+            <br /><br /><hr />
+            <md-button class="md-raised md-accent" ng-click = "iWantToBuy()"  ng-disabled = "!canBuy"> Buy </md-button>
+        </div>
+        <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "displaySendMessage">
+            <textarea ng-model = "message" id = "message" cols = "35" rows = "10" wrap = "soft" placeholder = "Write your message here. Lagom loves you"></textarea>
+            <md-button class="md-raised md-accent" ng-click = "sendMessage()"  ng-disabled = "!canBuy"> Send Message </md-button>
+        <div>
+    </div>
+</md-dialog>

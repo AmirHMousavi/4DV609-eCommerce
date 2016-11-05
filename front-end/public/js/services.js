@@ -12,13 +12,12 @@ angular.module('myApp.services', [])
   //value('version', '0.1')
   .factory('Config', [function(){
     var Config = {
-      //this should be the hosting URL for NOW is localhost
-      url : "http://localhost:9000/api/"
+        //this should be the hosting URL for NOW is localhost
+        url : "http://localhost:9000/api/"
     };
 
     return Config;
-
-  }])
+}])
 
   .factory('User', ['$http', 'Config', function($http, Config){
 
@@ -77,7 +76,7 @@ angular.module('myApp.services', [])
         logIn : function(inputUsername, inputPassword, callback) {
             $http({
                 method: 'GET',
-                url: Config.url + this.type + '/' + inputUsername + '/' + inputPassword
+                url: Config.url + this.type + '/' + 'login/' + inputUsername + '/' + inputPassword
             }).then(function successCallback(response) {
                 User.setUsername(response.data.userId);
                 User.setPassword(response.data.password);
@@ -88,7 +87,6 @@ angular.module('myApp.services', [])
               }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.log(response);
                 callback(response.data.detail);
             });
         },
@@ -100,10 +98,8 @@ angular.module('myApp.services', [])
                 url: Config.url + this.type,
                 data : jsonObject
             }).then(function successCallback(response) {
-                console.log(response);
                 callback(response.data);
               }, function errorCallback(response) {
-                  console.log(response);
                   callback(response);
             });
         },
@@ -114,8 +110,10 @@ angular.module('myApp.services', [])
         }
 
       }
+      
       return User;
   }])
+
   /**
    * This is the Item factory / class
    */
@@ -132,12 +130,11 @@ angular.module('myApp.services', [])
            */
           getAllItems  : function(callback) {
               $http({
-                  method : 'GET',
-                  url : Config.url + this.type
+                method : 'GET',
+                url : Config.url + this.type
               }).then(function successCallback(response) {
-                  callback(response.data);
+                callback(response.data);
               }).then(function errorCallback(response) {
-                  console.log('this is the error ::' + response);
               });
           },
           
@@ -152,7 +149,6 @@ angular.module('myApp.services', [])
               }).then(function successCallback(response) {
                   callback(response.data);
               }).then(function errorCallback(response) {
-                  console.log('this is the error ::' + response);
               });
             },
 
@@ -163,24 +159,84 @@ angular.module('myApp.services', [])
           uploadItem : function(userName, itemName, itemDescription, itemPrice, itemImage, callback) {
               //prepare the object
               var newItem = {userId:userName, name:itemName, description:itemDescription, photo:itemImage, price:itemPrice};
-              console.log('this is the new item to be added');
-              console.log(newItem);
               $http({
                   method : 'POST',
                   url : Config.url + this.type,
                   data : newItem
               }).then(function successCallback(response) {
-                  console.log('this is the response of ADDING a new item ::');
-                  console.log(response);
                   callback(newItem);
               }).then(function errorCallback(response) {
-                  console.log('this is the error ::' + response);
+              });
+          },
+
+          /**
+           * getItemWithID - returns the given Item
+           * @param String itemID
+           * @return Array item
+           */
+          getItemWithID : function(itemID, callback) {
+              $http({
+                  method : 'GET',
+                  url : Config.url + this.type + '/' + itemID
+              }).then(function successCallback(response) {
+                  callback(response.data);
+              }).then(function errorCallback(response) {
               });
           }
       }
 
       return Item;
-  }]);
+ }])
+  
+  /**
+   * This is the Message factory / class
+   */
+  .factory('Message', ['$http', 'Config', function($http, Config){
+    var Message = {
+        /**
+         * the type  
+         */
+        type : 'message',
 
+        /**
+         * @variable - holds all the messages for the specified item id
+         */
+        messages : [],
+
+        /**
+         * getMessagesForItemID
+         */
+        getMessagesForItemID : function (itemID, callback) {
+            console.log(Config.url + this.type + '/all/' + itemID);
+            $http({
+                method : 'GET',
+                url : Config.url + this.type + '/all/' + itemID
+            }).then(function successCallback(response) {
+                callback(response.data);
+            }).then(function errorCallback(error) {
+                console.log('this is the error ::');
+                console.log(error);
+            });
+        },
+
+        /**
+         * sendMessageForItemID
+         */
+        sendMessageForItemID : function(userID, itemID, message, callback) {
+            $http({
+                method : 'POST',
+                url : Config.url + this.type + '/send',
+                data : {userId : userID, itemId : itemID, message : message, isSold : ''}
+            }).then(function successCallback(response) {
+                callback(response.data);
+            }).then(function errorCallback(error) {
+                console.log('this is what went wrong with your request');
+                console.log(error);
+            });
+        }
+    }
+
+    return Message;
+   }]);
 
 });

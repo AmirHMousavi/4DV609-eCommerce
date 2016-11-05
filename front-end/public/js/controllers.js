@@ -69,9 +69,9 @@ controllers.LoginCtrl = function($scope, $rootScope, $mdToast, Config, User)
                         if (status == 200) {
                             //the login was successful we can store the data in local cookie
                             //then we should redirect to the other view where we show the user account
-                        $rootScope.currentUser = User.getUserName();
-                        $rootScope.isLoggedIn = true;
-                        window.location = "#/item";
+                            $rootScope.currentUser = User.getUserName();
+                            $rootScope.isLoggedIn = true;
+                            window.location = "#/item";
                         }
                         else {
                             //something went wrong we should notify the user
@@ -92,7 +92,7 @@ controllers.LoginCtrl = function($scope, $rootScope, $mdToast, Config, User)
 
 controllers.LoginCtrl.$inject = ['$scope', '$rootScope', '$mdToast', 'Config','User'];
 
-controllers.ItemsCtrl = function($scope, Item) 
+controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, User) 
 {
     $scope.items = {};
     //this is what is loaded when the Items page is ready
@@ -100,16 +100,60 @@ controllers.ItemsCtrl = function($scope, Item)
     angular.element(document).ready(function () {
         Item.getAllItems(function(response){
             $scope.items = response;
-            console.log($scope.items);
         });
-        
     });
+
+    /**
+     * itemDetails - shows the popup with the information of the item
+     * triggered when the button view details is clicked
+     */
+    $scope.itemDetails = function(itemID) {
+        $mdDialog.show({
+           locals : {selectedItemID: itemID},
+           controller : itemSelectedCtrl,
+           templateUrl : 'views/item-details.html',
+        });
+    };
+
+    //the controller that controlls the popup
+    var itemSelectedCtrl = function($scope, $rootScope, selectedItemID) {
+        $scope.canBuy = false;
+        $scope.displaySendMessage = false;
+        $scope.message = "";
+
+        if ($rootScope.isLoggedIn) {
+            $scope.canBuy = true; //we have a logged user
+        }
+
+        Item.getItemWithID(selectedItemID, function(item) {
+            $scope.item = item;
+        });
+
+        //close the mdDialog popup
+        $scope.closePopUp = function() {
+            $mdDialog.cancel();
+        };
+
+        //when Buy button is clicked
+        $scope.iWantToBuy = function() {
+            $scope.displaySendMessage = true;
+        };
+
+        //when send message is clicked
+        $scope.sendMessage = function() {
+            var userID = User.getLoggedUserName();
+            //send the message
+            Message.sendMessageForItemID(userID, selectedItemID, $scope.message, function(message) {
+                 $mdToast.show($mdToast.simple().content("Message sent successfully!"));
+                 $scope.displaySendMessage = false;
+            });
+        }
+    }
     
 }
+controllers.ItemsCtrl.$inject = ['$scope', '$mdDialog', '$mdToast', 'Item', 'Message', 'User'];
 
-controllers.ItemsCtrl.$inject = ['$scope', 'Item'];
-
-controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast) 
+controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdToast, $mdDialog) 
 {
     $scope.isLoggedIn = false;
 
@@ -129,26 +173,23 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast)
 
     //triggered on page load
     angular.element(document).ready(function () {
-        //alert($rootScope.currentUser);
         if ($rootScope.isLoggedIn) {
             Item.getMyItems($scope.username, function(response) {
                 $scope.myItems = response;
             });
             $scope.isLoggedIn = true;
-             //alert('is logged in :: ' + $scope.isLoggedIn + " current user :" + $rootScope.currentUser);
         }
         else {
-            //alert('not logged in');
             //they are not supposed to see this page
             //document.location = "#/";
             $scope.isLoggedIn = false;
-        }
-        
+        } 
     });
 
     //triggered when we want to upload a new item
     $scope.uploadItem = function() {
-        Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, $scope.itemPrice, 'photo', function(newItem) {
+        Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, 
+            $scope.itemPrice, 'photo', function(newItem) {
             if (newItem !== undefined) {
                 //it was successful we can show a message that it was successful
                 //empty out the inputs
@@ -160,9 +201,62 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, $mdToast)
             }
         });
     };
+
+    //when view details is clicked
+    $scope.seeItemDetails = function(itemID) {
+        $mdDialog.show({
+           locals : {selectedItemID: itemID},
+           controller : itemSelectedCtrl,
+           templateUrl : 'views/account-item-details.html',
+        });
+    };
+
+    //the controller that controlls the popup
+    var itemSelectedCtrl = function($scope, selectedItemID) {
+        $scope.showNoMessagesForItem = false;
+        $scope.messages = [];
+        //on pop up start
+        angular.element(document).ready(function () {
+            //get the selected item
+            Item.getItemWithID(selectedItemID, function(item) {
+                $scope.item = item;
+            });
+            
+            //we should get the messages for this item
+            Message.getMessagesForItemID(selectedItemID, function(messages) {
+                console.log("THIS IS THE MESSAGE >>>>>>>>>>>>>>");
+                console.log(messages);
+                console.log("THIS IS THE MESSAGE >>>>>>>>>>>>>>");
+                if (messages.length == 0) {
+                    $scope.showNoMessagesForItem = true;
+                }
+                else {
+                    $scope.messages = messages;
+                }
+            });
+        });
+        
+        //close the mdDialog popup
+        $scope.closePopUp = function() {
+            $mdDialog.cancel();
+        };
+    };
+
 }
 
-controllers.AccountCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
+controllers.AccountCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', 'Message', '$mdToast', '$mdDialog'];
+
+controllers.DocumentationCtrl = function($scope, $rootScope, User, Item, $mdToast) {
+    //
+}
+
+controllers.DocumentationCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
+
+controllers.UsCtrl = function($scope, $rootScope, User, Item, $mdToast) {
+    //
+}
+
+controllers.UsCtrl.$inject = ['$scope', '$rootScope', 'User', 'Item', '$mdToast'];
 
 return controllers;
 

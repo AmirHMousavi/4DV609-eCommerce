@@ -24,8 +24,13 @@ public interface MessageService extends Service {
 	ServiceCall<NotUsed, PSequence<Message>> getAllMessages();
 	
 	
-	ServiceCall<NotUsed, PSequence<Message>> getAllMessagesbyItemId(String itemId);
+	ServiceCall<NotUsed, PSequence<Message>> getAllMessagesByItemId(String itemId);
 	
+	
+	ServiceCall<NotUsed, String>getIsSold(String itemId);
+	
+	
+	ServiceCall<NotUsed, PSequence<Message>> getAllMessagesByUserId(String userId);
 	
 
 	@Override
@@ -33,8 +38,10 @@ public interface MessageService extends Service {
 		return Service.named("MESSAGE-SERVICE").withCalls(
 				Service.restCall(Method.POST, "/api/message/send", this::sendMessage),
 				Service.restCall(Method.GET, "/api/message/:messageId", this::getMessage),
-				Service.restCall(Method.GET,"/api/message/all/list", this::getAllMessages),
-				Service.restCall(Method.GET,"/api/message/all/:itemId", this::getAllMessagesbyItemId))
+				Service.restCall(Method.GET, "/api/message/all/list", this::getAllMessages),
+				Service.restCall(Method.GET, "/api/message/all/:itemId", this::getAllMessagesByItemId),
+				Service.restCall(Method.GET, "/api/message/all/sold/:itemId",this::getIsSold),
+				Service.restCall(Method.GET, "/api/message/all/by/:userId", this::getAllMessagesByUserId))
 				.withAutoAcl(true);
 	}
 }

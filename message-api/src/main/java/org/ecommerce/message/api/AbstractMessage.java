@@ -20,7 +20,7 @@ public interface AbstractMessage {
 	UUID getItemId();
 
 	@Value.Parameter
-	UUID getIsSold();
+	String getIsSold();
 
 	// @Value.Parameter
 	// String getSellerId();

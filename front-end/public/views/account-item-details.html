@@ -1,0 +1,41 @@
+<md-dialog id = "itemDetails" aria-label = "Item Details" flex = "60" layout = "column">
+    <md-toolbar class= "row" flex = "100">
+        <div class="md-toolbar-tools" class= "row" flex = "100">
+            <div flex = "70"><span>Details of {{item.name}}</span></div>
+                <!-- fill up the space between left and right area -->
+            <span flex></span>
+            <div>
+                <md-button class="md-fab md-mini md-primary" aria-label="exit" ng-click = "closePopUp()"> X </md-button>
+            </div>
+        </div>
+    </md-toolbar>
+    <div flex = "100" layout = "row" layout-margin>
+        <div id = "itemImgDiv" layout = "column" flex = "50" layout-margin>
+            <img src = "http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" height = "200px" width = "100%"/>
+            <br />
+            <div flex-offset = "5"><span class = "md-subhead title">Price : {{item.price}}</span></div>
+            <span flex-offset = "5" class = "md-subhead title">DESCRIPTION:</span>
+            <div flex-offset = "5"><span class = "md-subhead title">{{item.description}}</span></div>
+        </div>
+        <div id = "itemInfoDiv" layout = "column" layout-align = "center center" flex = "50" ng-if = "showNoMessagesForItem">
+            <div>
+                <center><span class="md-display-1 title"> YOU DON'T HAVE ANY MESSAGE FOR THIS ITEM YET! </span></center>
+            </div>
+        </div>
+        <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-if = "!showNoMessagesForItem">
+            <md-list flex>
+                <div ng-repeat = "message in messages">
+                    <md-subheader class="md-no-sticky">Message sender: {{message.userId}}</md-subheader>
+                    <md-list-item class="md-2-line">
+                        <img ng-src="{{todos[0].face}}?20" class="md-avatar" alt="{{todos[0].who}}" />
+                        <div class="md-list-item-text">
+                            <h3>Message Header</h3>
+                            <p>{{message.message}}</p>
+                        </div>
+                    </md-list-item>
+                    <md-divider ></md-divider>
+                </div>
+            </md-list>
+        </div>
+    </div>
+</md-dialog>

@@ -54,6 +54,8 @@ require(['angular', './controllers', './directives', './filters', './services', 
         $routeProvider.when('/register', {templateUrl: 'partials/login.html', controller: controllers.LoginCtrl});
         $routeProvider.when('/items', {templateUrl: 'partials/items.html', controller: controllers.ItemsCtrl});
         $routeProvider.when('/account', {templateUrl: 'partials/account.html', controller: controllers.AccountCtrl});
+        $routeProvider.when('/documentation', {templateUrl: 'partials/documentation.html', controller: controllers.DocumentationCtrl});
+        $routeProvider.when('/us', {templateUrl: 'partials/us.html', controller: controllers.UsCtrl});
         $routeProvider.otherwise({redirectTo: '/items'});
       }])
       .controller('mainController', ['$scope','$rootScope','$location','$mdToast','$mdDialog','User', function($scope,$rootScope,$location,$mdToast,$mdDialog, User){
