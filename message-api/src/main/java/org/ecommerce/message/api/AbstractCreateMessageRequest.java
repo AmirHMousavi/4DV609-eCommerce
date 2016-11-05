@@ -18,7 +18,7 @@ public interface AbstractCreateMessageRequest extends Jsonable {
 	UUID getItemId();
 
 	@Value.Parameter
-	UUID getIsSold();
+	String getIsSold();
 
 	// @Value.Parameter
 	// String getSellerId();
