@@ -1,16 +1,14 @@
 package org.ecommerce.user.api;
 
-import akka.Done;
-import akka.NotUsed;
+import org.ecommerce.security.SecurityHeaderFilter;
+import org.pcollections.PSequence;
+
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
-import com.lightbend.lagom.javadsl.server.ServerServiceCall;
 
-import java.util.function.Function;
-
-import org.pcollections.PSequence;
+import akka.NotUsed;
 
 public interface UserService extends Service {
 
@@ -30,22 +28,6 @@ public interface UserService extends Service {
 	 */
 	ServiceCall<CreateUserRequest, CreateUserResponse> createUser();
 
-	/**
-	 * log out
-	 * @param id
-	 * @return Done
-	 */
-	ServiceCall<NotUsed, Done> logOutUser(String id);
-
-	/**
-	 * check if user is authenticated
-	 * @param id
-	 * @param serviceCall
-	 * @return serviceCall
-	 */
-	<Request, Response> ServerServiceCall<Request, Response> authenticated(String id,
-			Function<User, ServerServiceCall<Request, Response>> serviceCall);
-	
 
 	/**
 	 * Other useful URLs:
@@ -62,8 +44,7 @@ public interface UserService extends Service {
 		return Service.named("userservice")
 				.withCalls(Service.restCall(Method.GET, "/api/users/login/:id/:password", this::getUser),
 						Service.restCall(Method.GET, "/api/users/list", this::getAllUsers),
-						Service.restCall(Method.POST, "/api/users", this::createUser),
-						Service.restCall(Method.GET, "/api/users/logout/:id", this::logOutUser))
-				.withAutoAcl(true);
+						Service.restCall(Method.POST, "/api/users", this::createUser))
+				.withAutoAcl(true).withHeaderFilter(SecurityHeaderFilter.INSTANCE);
 	}
 }

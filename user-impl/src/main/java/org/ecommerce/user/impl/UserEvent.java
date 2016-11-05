@@ -30,22 +30,4 @@ public interface UserEvent extends Jsonable, AggregateEvent<UserEvent> {
 			return Instant.now();
 		}
 	}
-
-	@Value.Immutable
-	@ImmutableStyle
-	@JsonDeserialize
-	interface AbstractStatusChanged extends UserEvent {
-		@Override
-		default AggregateEventTag<UserEvent> aggregateTag() {
-			return UserEventTag.INSTANCE;
-		}
-
-		@Value.Parameter
-		User getUser();
-
-		@Value.Default
-		default Instant getTimestamp() {
-			return Instant.now();
-		}
-	}
 }

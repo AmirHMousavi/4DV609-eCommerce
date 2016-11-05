@@ -1,17 +1,22 @@
 import ByteConversions._
-
+  
 organization in ThisBuild := "org.ecommerce"
 
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.11.8"
 //*************************************************
-scalaVersion in ThisBuild := "2.11.7"
+
 
 val immutables = "org.immutables" % "value" % "2.1.14"
 val mockito = "org.mockito" % "mockito-core" % "1.10.19"
 
 //****************************************************
-
+lazy val security = project("security")
+  .settings(
+    version := "1.0-SNAPSHOT",
+    libraryDependencies ++= Seq(lagomJavadslApi,lagomJavadslServer % Optional, immutables,lagomJavadslImmutables, lagomJavadslTestKit
+    )
+  )
 //*****************************************************
 
 lazy val itemApi = project("item-api")
@@ -26,6 +31,7 @@ lazy val itemApi = project("item-api")
     "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaV)}
   )
+  .dependsOn(security)
 
 lazy val itemImpl = project("item-impl")
   .enablePlugins(LagomJava)
@@ -36,7 +42,7 @@ lazy val itemImpl = project("item-impl")
     )
   )
   .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
-  .dependsOn(itemApi, userApi)
+  .dependsOn(itemApi)
 
 //*****************************************************
 lazy val userApi = project("user-api")
@@ -45,6 +51,7 @@ lazy val userApi = project("user-api")
     libraryDependencies ++= Seq(lagomJavadslApi,lagomJavadslServer, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
+  .dependsOn(security)
 
   lazy val userImpl = project("user-impl")
   .enablePlugins(LagomJava)
@@ -67,6 +74,7 @@ lazy val messageApi = project("message-api")
     libraryDependencies ++= Seq(lagomJavadslApi, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
+  .dependsOn(security)
 
 lazy val messageImpl = project("message-impl")
   .enablePlugins(LagomJava)
@@ -87,6 +95,7 @@ lazy val messageImpl = project("message-impl")
     libraryDependencies ++= Seq(lagomJavadslApi, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
+  .dependsOn(security)
 
 lazy val rankingImpl = project("ranking-impl")
   .enablePlugins(LagomJava)

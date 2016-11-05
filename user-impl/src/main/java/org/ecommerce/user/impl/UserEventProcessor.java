@@ -102,5 +102,4 @@ public class UserEventProcessor extends CassandraReadSideProcessor<UserEvent> {
         BoundStatement bindWriteOffset = writeOffset.bind(offset);
         LOGGER.info("Persisted User {}", event.getUser());
         return completedStatements(Arrays.asList(bindWriteUser, bindWriteOffset));
-    }
-}
+    }}

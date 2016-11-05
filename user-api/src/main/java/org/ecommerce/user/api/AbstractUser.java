@@ -16,8 +16,6 @@ public interface AbstractUser {
 	@Value.Parameter
 	String getPassword();
 	
-	@Value.Parameter
-	boolean getAuthStatus();
 
 	@Value.Check
 	default boolean checkPassword(String password) {

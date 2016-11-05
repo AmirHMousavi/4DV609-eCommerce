@@ -1,6 +1,6 @@
 package org.ecommerce.item.impl;
 
-import org.ecommerce.user.api.UserService;
+
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -41,15 +41,15 @@ public class ItemServiceImpl implements ItemService {
 
 	private final PersistentEntityRegistry persistentEntities;
 	private final CassandraSession db;
-	private final UserService userService;
+
 
 	@Inject
-	public ItemServiceImpl(UserService userService,
+	public ItemServiceImpl(
 			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide,
 			CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
-		this.userService = userService;
+
 
 		persistentEntities.register(ItemEntity.class);
 		readSide.register(ItemEventProcessor.class);

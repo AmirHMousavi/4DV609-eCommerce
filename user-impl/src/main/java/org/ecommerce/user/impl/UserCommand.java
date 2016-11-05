@@ -24,18 +24,6 @@ public interface UserCommand extends Jsonable {
 		@Value.Parameter
 		CreateUserRequest getCreateUserRequest();
 	}
-	
-	
-	@Value.Immutable
-	@ImmutableStyle
-	@JsonDeserialize(as = ChangeStatus.class)
-	public interface AbstractChangeStatus
-			extends UserCommand, CompressedJsonable, PersistentEntity.ReplyType<User> {
-
-		@Value.Parameter
-		boolean getChangeStatusRequest();
-	}
-	
 
 	@Value.Immutable(singleton = true)
 	@ImmutableStyle
