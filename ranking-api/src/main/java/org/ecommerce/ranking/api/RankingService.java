@@ -1,5 +1,7 @@
 package org.ecommerce.ranking.api;
 
+import org.ecommerce.security.SecurityHeaderFilter;
+
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -26,6 +28,6 @@ public interface RankingService extends Service {
 						Service.restCall(Method.GET, "/api/rating/:rankingId", this::getRanking),
 						Service.restCall(Method.POST, "/api/rating/set/create", this::createRanking),
 						Service.restCall(Method.POST, "/api/rating/set/:rankingId", this::setRanking))
-				.withAutoAcl(true);
+				.withAutoAcl(true).withHeaderFilter(SecurityHeaderFilter.INSTANCE);
 	}
 }

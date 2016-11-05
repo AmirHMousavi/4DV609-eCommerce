@@ -2,6 +2,7 @@ package org.ecommerce.message.api;
 
 import java.util.UUID;
 
+import org.ecommerce.security.SecurityHeaderFilter;
 import org.pcollections.PSequence;
 import static com.lightbend.lagom.javadsl.api.Service.named;
 import com.lightbend.lagom.javadsl.api.Descriptor;
@@ -42,6 +43,6 @@ public interface MessageService extends Service {
 				Service.restCall(Method.GET, "/api/message/all/:itemId", this::getAllMessagesByItemId),
 				Service.restCall(Method.GET, "/api/message/all/sold/:itemId",this::getIsSold),
 				Service.restCall(Method.GET, "/api/message/all/by/:userId", this::getAllMessagesByUserId))
-				.withAutoAcl(true);
+				.withAutoAcl(true).withHeaderFilter(SecurityHeaderFilter.INSTANCE);
 	}
 }
