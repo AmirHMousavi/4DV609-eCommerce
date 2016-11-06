@@ -1,5 +1,7 @@
 package org.ecommerce.message.impl;
 
+import static org.ecommerce.security.ServerSecurity.authenticated;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -16,7 +18,6 @@ import org.pcollections.TreePVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
@@ -58,11 +59,11 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public ServiceCall<CreateMessageRequest, CreateMessageResponse> sendMessage() {
-		return request -> {
+		return authenticated(userId-> request -> {
 			LOGGER.info("Sending a message: ", request);
 			UUID uuid = UUID.randomUUID();
 			return persistentEntities.refFor(MessageEntity.class, uuid.toString()).ask(CreateMessage.of(request));
-		};
+		});
 	}
 
 	@Override

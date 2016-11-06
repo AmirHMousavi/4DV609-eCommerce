@@ -1,28 +1,26 @@
 package org.ecommerce.ranking.impl;
 
-import org.ecommerce.ranking.api.Ranking;
+import static org.ecommerce.security.ServerSecurity.authenticated;
+
+import java.util.UUID;
+
+import javax.inject.Inject;
+
 import org.ecommerce.ranking.api.CreateRankingRequest;
 import org.ecommerce.ranking.api.CreateRankingResponse;
-import javax.inject.Inject;
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
-import java.math.BigDecimal;
-
+import org.ecommerce.ranking.api.Ranking;
+import org.ecommerce.ranking.api.RankingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.UUID;
-import com.lightbend.lagom.javadsl.api.transport.NotFound;
-import com.lightbend.lagom.javadsl.api.Descriptor;
+
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import akka.Done;
 import akka.NotUsed;
-
-import org.ecommerce.ranking.api.AbstractRanking;
-import org.ecommerce.ranking.api.RankingService;
 
 public class RankingServiceImpl implements RankingService {
 
@@ -56,20 +54,20 @@ public class RankingServiceImpl implements RankingService {
 
 	@Override
 	public ServiceCall<CreateRankingRequest, Done> setRanking(String rankingId) {
-		return request -> {
+		return authenticated(userId -> request -> {
 			LOGGER.info("Rating a seller: ", request);
 			//UUID uuid = UUID.fromString(rankingId);
 			//BigDecimal bigdecimal = BigDecimal.valueOf(Long.parseLong(request));
 			return persistentEntities.refFor(RankingEntity.class, rankingId).ask(ChangeRanking.of(request.getRating()));
-		};
+		});
 	}
 
 	@Override
 	public ServiceCall<CreateRankingRequest, CreateRankingResponse> createRanking() {
-		return request -> {
+		return authenticated(userId -> request -> {
 			LOGGER.info("Rating a seller: ", request);
 			UUID uuid = UUID.randomUUID();
 			return persistentEntities.refFor(RankingEntity.class, uuid.toString()).ask(CreateRanking.of(request));
-		};
+		});
 	}
 }
