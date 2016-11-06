@@ -11,7 +11,7 @@
     </md-toolbar>
     <div flex = "100" layout = "row" layout-margin>
         <div id = "itemImgDiv" layout = "column" flex = "50" layout-margin>
-            <img src = "http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" height = "200px" width = "100%"/>
+            <img id = "itemImg" src = "http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" height = "200px" width = "100%"/>
             <br />
             <div flex-offset = "5"><span class = "md-title title">Price : {{item.price |currency}}</span></div>
             <br />
@@ -28,7 +28,7 @@
                 <div ng-repeat = "message in messages">
                     <md-subheader class="md-no-sticky">Message sender: {{message.userId}}</md-subheader>
                     <md-list-item class="md-3-line" layout = "row" flex = "100" layout-align = "start start">
-                        <img md-svg-icon="communication:phone" ng-src="{{todos[0].face}}?20" class="md-avatar" />
+                        <img md-svg-icon="communication:phone" ng-src = "img/face.svg" class = "md-avatar" />
                         <div class="md-list-item-text">
                             <h3>Message Header</h3>
                             <p>{{message.message}}</p>

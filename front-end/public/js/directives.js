@@ -12,11 +12,10 @@ angular.module('myApp.directives', [])
       elm.text(version);
     };
   }])
-  .directive('itemDetails', function(){
+  .directive('itemCard', function(){
       return {
         restrict:'E',
-        templateUrl:'views/item-details.html',
-        controller: 'appController'
+        templateUrl:'views/item-card.html'
     };
   });
 

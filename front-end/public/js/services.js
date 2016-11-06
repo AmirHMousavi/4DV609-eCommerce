@@ -160,12 +160,36 @@ angular.module('myApp.services', [])
               //prepare the object
               var newItem = {userId:userName, name:itemName, description:itemDescription, photo:itemImage, price:itemPrice};
               $http({
+                  headers: {"User-Id" : userName},
                   method : 'POST',
                   url : Config.url + this.type,
                   data : newItem
               }).then(function successCallback(response) {
+                  newItem['itemID'] = response.data.id;
                   callback(newItem);
-              }).then(function errorCallback(response) {
+              }).then(function errorCallback(response) {});
+          },
+
+          /**
+           * uploadImageForItem - after the item is stored in the server
+           * it returns the item id then we store the image for that item
+           * @param String itemID - the ID of the item
+           * @param File imageData this is the image of the item
+           */
+          uploadImageForItem : function(itemID, userName, imageData, callback) {
+              $http({
+                  headers: {"User-Id" : userName},
+                  method : 'POST',
+                  url : Config.url + this.type + '/image/' + itemID,
+                  data : {image:imageData}
+              }).then(function successCallback(response) {
+                  console.log('finally we got the image response;;;;;');
+                  console.log(response);
+                  console.log('the end of image response');
+                  callback(response);
+              }).then(function errorCallback(error) {
+                  console.log('this error happened');
+                  console.log(error);
               });
           },
 
@@ -204,7 +228,7 @@ angular.module('myApp.services', [])
         messages : [],
 
         /**
-         * getMessagesForItemID
+         * getMessagesForItemID - gets all the messages for the selected item
          */
         getMessagesForItemID : function (itemID, callback) {
             console.log(Config.url + this.type + '/all/' + itemID);
@@ -212,6 +236,8 @@ angular.module('myApp.services', [])
                 method : 'GET',
                 url : Config.url + this.type + '/all/' + itemID
             }).then(function successCallback(response) {
+                console.log('these are the messages ::::::');
+                console.log(response.data);
                 callback(response.data);
             }).then(function errorCallback(error) {
                 console.log('this is the error ::');

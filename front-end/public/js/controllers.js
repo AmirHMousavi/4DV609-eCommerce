@@ -100,6 +100,9 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
     angular.element(document).ready(function () {
         Item.getAllItems(function(response){
             $scope.items = response;
+            console.log('this is all items........');
+            console.log(response);
+            console.log('end of all items.........');
         });
     });
 
@@ -195,18 +198,34 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
 
     //triggered when we want to upload a new item
     $scope.uploadItem = function() {
-        Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, 
-            $scope.itemPrice, 'photo', function(newItem) {
-            if (newItem !== undefined) {
-                //it was successful we can show a message that it was successful
-                //empty out the inputs
-                $scope.itemName = "";
-                $scope.itemDescription = "";
-                $scope.itemPrice = "";
-                $mdToast.show($mdToast.simple().content("Item was uploaded successfuly!"));
-                $scope.myItems.push(newItem)
-            }
-        });
+        //we get the file/image we want to upload
+        var file    = document.querySelector('input[type=file]').files[0];
+        var reader  = new FileReader();
+
+        if (file) {
+           reader.readAsDataURL(file); //reads the data as a URL
+        }
+
+        reader.onloadend = function () {
+            Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, 
+                $scope.itemPrice, file.name, function(newItem) {
+                if (newItem !== undefined) {
+                    //it was successful we can show a message that it was successful
+                    //empty out the inputs
+                    $scope.itemName = "";
+                    $scope.itemDescription = "";
+                    $scope.itemPrice = "";
+                    $mdToast.show($mdToast.simple().content("Item was uploaded successfuly!"));
+                    $scope.myItems.push(newItem);
+                    //then we have to upload the image for the item
+                    Item.uploadImageForItem(newItem.itemID, $scope.username, reader.result, function(response) {
+                        alert('image has been uploaded');
+                        console.log(response);
+                    });   
+                }
+            });
+       }
+
     };
 
     //when view details is clicked
@@ -231,9 +250,6 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
 
             //we should get the messages for this item
             Message.getMessagesForItemID(selectedItemID, function(messages) {
-                console.log("THIS IS THE MESSAGE >>>>>>>>>>>>>>");
-                console.log(messages);
-                console.log("THIS IS THE MESSAGE >>>>>>>>>>>>>>");
                 if (messages.length == 0) {
                     $scope.showNoMessagesForItem = true;
                 }

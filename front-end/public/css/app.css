@@ -1,5 +1,8 @@
 /* app css stylesheet */
-
+#main_tabs
+{
+  margin-top : 17px;
+}
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;
@@ -75,4 +78,26 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
 #sellBtn
 {
   margin-top: 25px;
+}
+#itemImgDiv
+{
+  margin-top:80px;
+}
+.cardImg
+{
+  height: 200px;
+}
+#itemTitle
+{
+  color: white;
+  margin-top: -150px;
+}
+#itemExtraInfo
+{
+  color: white;
+  margin-top: 80px;
+}
+#cardContent
+{
+  margin-top: 0px;
 }
