@@ -1,6 +1,7 @@
 package org.ecommerce.item.impl;
 
 
+import static org.ecommerce.security.ServerSecurity.authenticated;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -105,11 +106,11 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ServiceCall<CreateItemRequest, CreateItemResponse> createItem() {
-		return request -> {
+		return authenticated(userId -> request -> {
 			LOGGER.info("Creating item: {}", request);
 			UUID uuid = UUID.randomUUID();
 			return persistentEntities.refFor(ItemEntity.class, uuid.toString()).ask(CreateItem.of(request));
-		};
+		});
 	}
 
 	@Override
@@ -151,15 +152,22 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	// public ServiceCall<String, String> createImage() {
 	public ServiceCall<ByteString, String> createImage(String id) {
-
-		final Item item = itemGet(id);
-		return request -> {
+		
+		return authenticated(userId -> request -> {
+			
+			final Item item = itemGet(id);
 
 			ByteString bytes = (ByteString) request;
 
 			try {
+
+				String foldename = "images/";
+				File file = new File(foldename);
+				if(!file.isDirectory())
+					file.mkdir();
+				
 				String filename = "images/image_" + id + "_" + item.getPhoto();
-				File file = new File(filename);
+				file = new File(filename);
 				if (file.exists())
 					file.delete();
 				file.createNewFile();
@@ -192,7 +200,7 @@ public class ItemServiceImpl implements ItemService {
 
 			}
 			return completedFuture(null);
-		};
+		});
 	}
 	
 	@Override

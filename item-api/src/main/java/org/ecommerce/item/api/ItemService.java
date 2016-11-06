@@ -3,6 +3,7 @@ package org.ecommerce.item.api;
 import java.io.File;
 import java.util.concurrent.CompletionStage;
 
+import org.ecommerce.security.SecurityHeaderFilter;
 import org.pcollections.PSequence;
 
 import com.lightbend.lagom.javadsl.api.Descriptor;
@@ -84,7 +85,7 @@ public interface ItemService extends Service {
                 Service.restCall(Method.GET, "/api/items/image/:id", this::getImage)
                 .withResponseSerializer(
                 		new ByteStringMessage())
-        ).withAutoAcl(true);
+        ).withAutoAcl(true).withHeaderFilter(SecurityHeaderFilter.INSTANCE);
 //                .withSerializerFactory(new MultipartFormDataSerializerFactory());
     }
 }
