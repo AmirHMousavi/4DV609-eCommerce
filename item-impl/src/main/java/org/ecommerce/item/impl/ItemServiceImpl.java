@@ -1,6 +1,5 @@
 package org.ecommerce.item.impl;
 
-
 import static org.ecommerce.security.ServerSecurity.authenticated;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -32,9 +31,13 @@ import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import akka.NotUsed;
 import akka.stream.IOResult;
+import akka.stream.Materializer;
 import akka.stream.javadsl.FileIO;
+import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
+import play.libs.streams.Accumulator;
+import scala.concurrent.ExecutionContext;
 
 public class ItemServiceImpl implements ItemService {
 
@@ -42,15 +45,17 @@ public class ItemServiceImpl implements ItemService {
 
 	private final PersistentEntityRegistry persistentEntities;
 	private final CassandraSession db;
-
+	// private ExecutionContext ec;
+	Materializer materializer;
 
 	@Inject
-	public ItemServiceImpl(
-			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide,
-			CassandraSession db) {
+	public ItemServiceImpl(Materializer materializer,
+			// ExecutionContext ec,
+			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide, CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
-
+		// this.ec = ec;
+		this.materializer = materializer;
 
 		persistentEntities.register(ItemEntity.class);
 		readSide.register(ItemEventProcessor.class);
@@ -86,13 +91,13 @@ public class ItemServiceImpl implements ItemService {
 			return result;
 		};
 	}
-	
+
 	@Override
 	public ServiceCall<NotUsed, PSequence<Item>> getAllItemsBy(String userId) {
 		return (req) -> {
 			// LOGGER.info("Looking up all items");
 			CompletionStage<PSequence<Item>> result = db
-					.selectAll("SELECT * FROM item where userId = ? ALLOW FILTERING",userId).thenApply(rows -> {
+					.selectAll("SELECT * FROM item where userId = ? ALLOW FILTERING", userId).thenApply(rows -> {
 						List<Item> items = rows.stream()
 								.map(row -> Item.of(row.getUUID("itemId"), row.getString("userId"),
 										row.getString("name"), row.getString("description"), row.getString("photo"),
@@ -152,9 +157,9 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	// public ServiceCall<String, String> createImage() {
 	public ServiceCall<ByteString, String> createImage(String id) {
-		
+
 		return authenticated(userId -> request -> {
-			
+
 			final Item item = itemGet(id);
 
 			ByteString bytes = (ByteString) request;
@@ -162,51 +167,80 @@ public class ItemServiceImpl implements ItemService {
 			try {
 
 				String foldename = "images/";
-				File file = new File(foldename);
-				if(!file.isDirectory())
-					file.mkdir();
-				
+				File dir = new File(foldename);
+				if (!dir.isDirectory() || !dir.exists())
+					dir.mkdir();
+
 				String filename = "images/image_" + id + "_" + item.getPhoto();
-				file = new File(filename);
+				File file = new File(filename);
 				if (file.exists())
 					file.delete();
 				file.createNewFile();
+
 				final FileOutputStream outputStream = new FileOutputStream(file);
 				outputStream.write(bytes.toArray());
-
 				outputStream.flush();
 				outputStream.close();
 
-				// // // The sink that writes to the output stream
-				// Sink<ByteString, CompletionStage<Done>> sink = Sink
-				// .<ByteString>foreach(bytes ->
-				// outputStream.write(bytes.toArray()));
-				// //
-				// return
-				// completedFuture(Accumulator.fromSink(sink)).thenCompose(r ->
-				// {
-				// try {
-				// outputStream.flush();
-				// outputStream.close();
-				// } catch (Exception ex) {
-				// }
-				// return completedFuture((Accumulator<ByteString, Done>) r);
-				// });
-				// outputStream.write(request.getBytes());
-
-				// return completedFuture(request);
 				return completedFuture("Uploaded!");
 			} catch (Exception ex) {
 
 			}
 			return completedFuture(null);
 		});
+
 	}
-	
+
 	@Override
-	public ServiceCall<Source<ByteString,?>, String> uploadImage(String id){
-		return req -> {
-			return completedFuture("Done, file is uploaded!");
+	public ServiceCall<Source<ByteString, ?>, String> uploadImage(String id) {
+		return source -> {
+			final Item item = itemGet(id);
+			
+			String foldename = "images/";
+			File dir = new File(foldename);
+			if (!dir.isDirectory() || !dir.exists())
+				dir.mkdir();
+
+			String filename = "images/image_" + id + "_" + item.getPhoto();
+			File file = new File(filename);
+			if (file.exists())
+				file.delete();
+			try{
+			file.createNewFile();
+			}catch(Exception ex){}
+
+			// final FileOutputStream outputStream = new FileOutputStream(file);
+			//
+			// outputStream.flush();
+			// outputStream.close();
+
+			final Sink<ByteString, CompletionStage<IOResult>> sink = FileIO.toFile(file);
+			// Accumulator.fromSink(
+			// sink.mapMaterializedValue(completionStage ->
+			// completionStage.thenApplyAsync(results ->
+			// new FilePart<File>(partname,
+			// filename,
+			// contentType,
+			// file))
+			// ));
+			return source.runWith(sink, materializer).thenApplyAsync(results -> "file uploaded");
+
+			// // // // The sink that writes to the output stream
+			// Sink<ByteString, CompletionStage<Done>> sink = Sink
+			// .<ByteString>foreach(bytes ->
+			// outputStream.write(bytes.toArray()));
+			// //
+			// completedFuture(Accumulator.fromSink(sink)).thenCompose(r -> {
+			// try {
+			// outputStream.flush();
+			// outputStream.close();
+			// } catch (Exception ex) {
+			// }
+			// return completedFuture((Accumulator<ByteString, Done>) r);
+			// });
+			// outputStream.write(request.getBytes());
+
+			// return completedFuture("Done, file is uploaded!");
 		};
 	}
 }

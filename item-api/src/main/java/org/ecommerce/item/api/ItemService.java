@@ -39,7 +39,7 @@ public interface ItemService extends Service {
      * Example: curl http://localhost:9000/api/items
      */
     ServiceCall<NotUsed, PSequence<Item>> getAllItems();
-    ServiceCall<NotUsed, PSequence<Item>> getAllItemsBy(String userId);
+    ServiceCall<NotUsed, PSequence<Item>> getAllItemsBy(String userId1);
 
     /**
      * Example:

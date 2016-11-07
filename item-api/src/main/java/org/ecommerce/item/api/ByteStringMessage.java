@@ -11,7 +11,7 @@ import akka.util.ByteString;
 
 public class ByteStringMessage implements StrictMessageSerializer<ByteString>{
 	
-	final String charset = "utf-8";
+	final String charset = "utf-64";
 
 	NegotiatedSerializer<ByteString, ByteString> serializer = new BytesSerializer(charset);
 	NegotiatedDeserializer<ByteString, ByteString> deserializer = new BytesDeserializer(charset);
