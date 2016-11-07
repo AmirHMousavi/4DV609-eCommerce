@@ -194,7 +194,46 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
             //document.location = "#/";
             $scope.isLoggedIn = false;
         } 
+        /*
+        var exampleSocket = new WebSocket("ws://localhost/:9000" + '/items' + '/upload' + "/d8371437-c3dd-4e0f-9859-529103d3e23d");
+        exampleSocket.onopen = function (event) {
+            exampleSocket.send("This is what we want to send"); 
+        };
+        exampleSocket.onmessage = function (event) {
+           console.log(event.data);
+           console.log('this was the data recieved');
+        } */
+        //testing the web sockets
+        /*createStream(this.type + '/upload' + "/29999", function(stream) {
+            alert('this is the stream');
+            stream.send(JSON.stringify({id: "22222222222222" }));
+        });*/
     });
+
+    function createStream(path, onopen) {
+        return {
+            connect: function(onChirp) {
+                alert('this is the file ::' + path);
+                var stream = new WebSocket("ws://" + location.host + path);
+                if (onopen) {
+                    stream.onopen = function(event) {
+                        onopen(stream, event);
+                    }.bind(this);
+                }
+                stream.onmessage = function(event) {
+                    var chirp = JSON.parse(event.data);
+                    onChirp(chirp);
+                    console.log('this is the answer ::: +' +chirp);
+                }.bind(this);
+                return {
+                    close: function() {
+                        stream.close();
+                    }
+                }
+            }
+        };
+    }
+
 
     //triggered when we want to upload a new item
     $scope.uploadItem = function() {

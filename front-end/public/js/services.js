@@ -177,7 +177,20 @@ angular.module('myApp.services', [])
            * @param File imageData this is the image of the item
            */
           uploadImageForItem : function(itemID, userName, imageData, callback) {
-              $http({
+              //we will stream the image data
+                var exampleSocket = new WebSocket("ws://localhost:9000" + '/items' + '/upload/' + itemID);
+                    exampleSocket.onopen = function (event) {
+                    console.log('this is the event .....');
+                    console.log(event);
+                    exampleSocket.send({image:imageData}); 
+                };
+                exampleSocket.onmessage = function (event) {
+                    console.log(event.data);
+                    console.log('this is the event ..... in error');
+                    console.log(event);
+                    console.log('this was the data recieved');
+                }
+              /*$http({
                   headers: {"User-Id" : userName},
                   method : 'POST',
                   url : Config.url + this.type + '/image/' + itemID,
@@ -190,7 +203,7 @@ angular.module('myApp.services', [])
               }).then(function errorCallback(error) {
                   console.log('this error happened');
                   console.log(error);
-              });
+              });*/
           },
 
           /**
