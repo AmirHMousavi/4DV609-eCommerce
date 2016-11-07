@@ -30,6 +30,7 @@ import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import akka.NotUsed;
+import akka.dispatch.OnSuccess;
 import akka.stream.IOResult;
 import akka.stream.Materializer;
 import akka.stream.javadsl.FileIO;
@@ -192,7 +193,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ServiceCall<Source<ByteString, ?>, String> uploadImage(String id) {
+	public ServiceCall<Source<ByteString,?>, String> uploadImage(String id) {
 		return source -> {
 			final Item item = itemGet(id);
 			
@@ -215,15 +216,16 @@ public class ItemServiceImpl implements ItemService {
 			// outputStream.close();
 
 			final Sink<ByteString, CompletionStage<IOResult>> sink = FileIO.toFile(file);
-			// Accumulator.fromSink(
-			// sink.mapMaterializedValue(completionStage ->
-			// completionStage.thenApplyAsync(results ->
-			// new FilePart<File>(partname,
-			// filename,
-			// contentType,
-			// file))
-			// ));
-			return source.runWith(sink, materializer).thenApplyAsync(results -> "file uploaded");
+//			 return completedFuture(Accumulator.<ByteString, String>fromSink(
+//			 sink.mapMaterializedValue(completionStage ->
+//			 completionStage.thenApplyAsync(results ->
+//			 "file uploaded")
+//			 )));
+			 CompletionStage<IOResult> result = source.runWith(sink,materializer);
+			 try{
+			 IOResult resultio = result.toCompletableFuture().get();
+			 }catch(Exception ex){}
+			//return source.runWith(sink, materializer).thenApplyAsync(results -> "file uploaded");
 
 			// // // // The sink that writes to the output stream
 			// Sink<ByteString, CompletionStage<Done>> sink = Sink
@@ -240,7 +242,7 @@ public class ItemServiceImpl implements ItemService {
 			// });
 			// outputStream.write(request.getBytes());
 
-			// return completedFuture("Done, file is uploaded!");
+			 return completedFuture("Done, file is uploaded!");
 		};
 	}
 }
