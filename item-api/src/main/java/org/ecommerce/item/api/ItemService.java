@@ -51,7 +51,7 @@ public interface ItemService extends Service {
     ServiceCall<ByteString, String> createImage(String id);
     ServiceCall<NotUsed, ByteString> getImage(String id);
     
-    ServiceCall<Source<ByteString,?>, String> uploadImage(String id);
+    ServiceCall<Source<ByteString,?>, Accumulator<ByteString, String>> uploadImage(String id);
     
 //    ServiceCall<String, Accumulator<ByteString, Done>> createImage();
     //ServiceCall<String, String> createImage();
