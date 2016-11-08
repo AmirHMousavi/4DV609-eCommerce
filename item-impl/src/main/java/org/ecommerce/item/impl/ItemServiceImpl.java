@@ -198,8 +198,31 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	public ServiceCall<NotUsed, Source<ByteString, ?>> downloadImage(String id) {
+		return notused -> {
+			final Item item = itemGet(id);
+			
+			
+			
+			String filename = "images/image_" + id + "_" + item.getPhoto();
+			File file = new File(filename);
+			
+			Source<ByteString, CompletionStage<IOResult>> source = FileIO.fromFile(file);			
+			
+//			FileInputStream is = new FileInputStream(file);
+//			int noOfBytes = is.available();
+//			byte[] array = new byte[noOfBytes];
+//			is.read(array);
+//			is.close();
+//			ByteString bytes = ByteString.fromArray(array);
+//			
+			return completedFuture(source);
+		};
+	}
+
+	@Override
 	public ServiceCall<Source<ByteString, ?>, String> uploadImage(String id) {
-//		String id = "c81862f2-40f2-4f92-b1df-52170b654d4d";
+		// String id = "c81862f2-40f2-4f92-b1df-52170b654d4d";
 		return source -> {
 			final Item item = itemGet(id);
 
@@ -215,22 +238,21 @@ public class ItemServiceImpl implements ItemService {
 			try {
 				file.createNewFile();
 
-//				final FileOutputStream outputStream = new FileOutputStream(file);
-				
-				Sink<ByteString, CompletionStage<IOResult>> sink =
-						 FileIO.toFile(file);
-				
-				
-				
+				// final FileOutputStream outputStream = new
+				// FileOutputStream(file);
+
+				Sink<ByteString, CompletionStage<IOResult>> sink = FileIO.toFile(file);
+
 				sink = Flow.of(ByteString.class)
-//					    .map(s -> ByteString.fromString(s.toString() + "\n"))
-					    .toMat(sink, Keep.right());
-				
+						// .map(s -> ByteString.fromString(s.toString() + "\n"))
+						.toMat(sink, Keep.right());
+
 				source.runWith(sink, materializer);
-				 
-//				Sink<ByteString, CompletionStage<akka.Done>> sink = Sink
-//						.<ByteString>foreach(bytes -> outputStream.write(bytes.toArray()));
-				
+
+				// Sink<ByteString, CompletionStage<akka.Done>> sink = Sink
+				// .<ByteString>foreach(bytes ->
+				// outputStream.write(bytes.toArray()));
+
 			} catch (Exception ex) {
 			}
 
