@@ -32,7 +32,7 @@ public class MessageEntity extends PersistentEntity<MessageCommand, MessageEvent
 				CreateMessageRequest req = cmd.getCreateMessageRequest();
 
 				Message message = Message.of(UUID.fromString(entityId()), req.getUserId(), req.getItemId(),
-						req.getIsSold(), req.getMessage());
+						req.getIsSold(), req.getMessage(), req.getTimestamp());
 				// req.getSellerId(),);
 				final MessageCreated messageCreated = MessageCreated.builder().message(message).build();
 				LOGGER.info("Processed CreateMessage command into MessageCreated event {}", messageCreated);

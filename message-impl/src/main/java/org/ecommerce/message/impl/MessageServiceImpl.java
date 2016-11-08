@@ -2,6 +2,7 @@ package org.ecommerce.message.impl;
 
 import static org.ecommerce.security.ServerSecurity.authenticated;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
@@ -74,7 +75,8 @@ public class MessageServiceImpl implements MessageService {
 				List<Message> messages = rows.stream()
 						.map(row -> Message.of(row.getUUID("messageId"), row.getString("userId"), row.getUUID("itemId"),
 								row.getString("isSold"),
-								/* row.getString("sellerId") */ row.getString("message")))
+								/* row.getString("sellerId") */ row.getString("message"),
+								Instant.ofEpochMilli(row.getLong("timestamp"))))
 						.collect(Collectors.toList());
 				return TreePVector.from(messages);
 			});
@@ -91,7 +93,8 @@ public class MessageServiceImpl implements MessageService {
 					.selectAll("SELECT * FROM message WHERE itemId = ?  ALLOW FILTERING", uuid).thenApply(rows -> {
 						List<Message> messages = rows.stream()
 								.map(row -> Message.of(row.getUUID("messageId"), row.getString("userId"),
-										row.getUUID("itemId"), row.getString("isSold"), row.getString("message")))
+										row.getUUID("itemId"), row.getString("isSold"), row.getString("message"),
+										Instant.ofEpochMilli(row.getLong("timestamp"))))
 								.collect(Collectors.toList());
 						return TreePVector.from(messages);
 					});
@@ -109,7 +112,8 @@ public class MessageServiceImpl implements MessageService {
 					.selectAll("SELECT * FROM message WHERE itemId = ? ALLOW FILTERING", uuid).thenApply(rows -> {
 						List<Message> messages = rows.stream()
 								.map(row -> Message.of(row.getUUID("messageId"), row.getString("userId"),
-										row.getUUID("itemId"), row.getString("isSold"), row.getString("message")))
+										row.getUUID("itemId"), row.getString("isSold"), row.getString("message"),
+										Instant.ofEpochMilli(row.getLong("timestamp"))))
 								.collect(Collectors.toList());
 						for (Message message : messages) {
 							String soldId = message.getIsSold();
@@ -127,10 +131,11 @@ public class MessageServiceImpl implements MessageService {
 		return (req) -> {
 			LOGGER.info("Looking up all messages");
 			CompletionStage<PSequence<Message>> theResult = db
-					.selectAll("SELECT * FROM message WHERE userId = ?  ALLOW FILTERING", userId).thenApply(rows -> {
+					.selectAll("SELECT * FROM message WHERE userId = ? ALLOW FILTERING", userId).thenApply(rows -> {
 						List<Message> messages = rows.stream()
 								.map(row -> Message.of(row.getUUID("messageId"), row.getString("userId"),
-										row.getUUID("itemId"), row.getString("isSold"), row.getString("message")))
+										row.getUUID("itemId"), row.getString("isSold"), row.getString("message"),
+										Instant.ofEpochMilli(row.getLong("timestamp"))))
 								.collect(Collectors.toList());
 						return TreePVector.from(messages);
 					});
