@@ -31,7 +31,7 @@ lazy val itemApi = project("item-api")
     "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaV)}
   )
-  .dependsOn(security)
+  .dependsOn(security, messageApi)
 
 lazy val itemImpl = project("item-impl")
   .enablePlugins(LagomJava)
@@ -42,7 +42,7 @@ lazy val itemImpl = project("item-impl")
     )
   )
   .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
-  .dependsOn(itemApi)
+  .dependsOn(itemApi, messageApi)
 
 //*****************************************************
 lazy val userApi = project("user-api")
