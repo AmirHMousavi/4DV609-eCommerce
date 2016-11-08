@@ -26,11 +26,13 @@ ServiceCall<CreateUserRequest, CreateUserResponse> createUser();
 ```
 * `CreateUserRequest` is an immutable, nonNullByDefault object which contains UserId and password of the user that is going to be registred.
 * `CreateUserResponse` is an immutable, nonNullByDefault object which contains the userId of the just registred user.
+
 ### implementation
 At system startup, Lagom registers all PersistentEntity classes in PersistentEntityRegistry. The entities are automatically distributed across the nodes in the cluster of the service. Each entity runs only at one place, and messages can be sent to the entity without requiring the sender to know the location of the entity. An entity is kept alive, holding its current state in memory, as long as it is used. When it has not been used for a while it will automatically be passivated to free up resources.
 When an entity is started it replays the stored events to restore the current state. Later, PersistentEntityRef can be retrieved with PersistentEntityRegistry#refFor in order to send to a PersistentEntity.
 
 In brief, every command to a persistentEntity is crreating an event, the event get processed and becomes available in readside. the event process also results in state change of the entity.
+
 ##### Folder Structure
 ```
 └───org
