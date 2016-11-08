@@ -198,8 +198,8 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ServiceCall<Source<ByteString, ?>, String> uploadImage() {
-		String id = "8f0f288a-436d-4bd8-a8df-aefaa25afc93";
+	public ServiceCall<Source<ByteString, ?>, String> uploadImage(String id) {
+//		String id = "c81862f2-40f2-4f92-b1df-52170b654d4d";
 		return source -> {
 			final Item item = itemGet(id);
 
