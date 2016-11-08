@@ -173,11 +173,11 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ServiceCall<String, String> setSold(String id) {
-		return authenticated(userId -> request -> {
+		return request -> {
 			LOGGER.info("Selling item: {}", request);			
 			return persistentEntities.refFor(ItemEntity.class, id)
 					.ask(SetItemSold.of(request));
-		});
+		};
 	}
 	@Override
 	// public ServiceCall<String, String> createImage() {

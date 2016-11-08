@@ -95,7 +95,7 @@ lazy val messageImpl = project("message-impl")
     libraryDependencies ++= Seq(lagomJavadslApi, immutables,
       lagomJavadslImmutables, lagomJavadslJackson)
   )
-  .dependsOn(security)
+  .dependsOn(security, itemApi, messageApi)
 
 lazy val rankingImpl = project("ranking-impl")
   .enablePlugins(LagomJava)
@@ -106,7 +106,7 @@ lazy val rankingImpl = project("ranking-impl")
     )
   )
   .settings(lagomForkedTestSettings: _*) // tests must be forked for cassandra
-  .dependsOn(rankingApi)
+  .dependsOn(rankingApi, itemApi, messageApi)
     
 //****************************************************************************************************
 
