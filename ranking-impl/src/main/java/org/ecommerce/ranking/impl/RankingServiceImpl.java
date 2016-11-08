@@ -37,8 +37,8 @@ public class RankingServiceImpl implements RankingService {
 	ItemService itemService;
 
 	@Inject
-	public RankingServiceImpl(ItemService itemService, MessageService messageService, PersistentEntityRegistry persistentEntities, CassandraReadSide readSide,
-			CassandraSession db) {
+	public RankingServiceImpl(ItemService itemService, MessageService messageService,
+			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide, CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
 		this.messageService = messageService;
@@ -65,8 +65,9 @@ public class RankingServiceImpl implements RankingService {
 	public ServiceCall<CreateRankingRequest, Done> setRanking(String rankingId) {
 		return authenticated(userId -> request -> {
 			LOGGER.info("Rating a seller: ", request);
-			//UUID uuid = UUID.fromString(rankingId);
-			//BigDecimal bigdecimal = BigDecimal.valueOf(Long.parseLong(request));
+			// UUID uuid = UUID.fromString(rankingId);
+			// BigDecimal bigdecimal =
+			// BigDecimal.valueOf(Long.parseLong(request));
 			return persistentEntities.refFor(RankingEntity.class, rankingId).ask(ChangeRanking.of(request.getRating()));
 		});
 	}
@@ -76,9 +77,12 @@ public class RankingServiceImpl implements RankingService {
 		return authenticated(userId -> request -> {
 			LOGGER.info("Rating a seller: ", request);
 			UUID uuid = UUID.randomUUID();
-			CompletionStage<String> msg = itemService.setSold(request.getItemId().toString())
-					.invoke(uuid.toString());
+			CompletionStage<String> msg = itemService.setSold(request.getItemId().toString()).invoke(uuid.toString());
 			String isSold = msg.toCompletableFuture().join();
+
+			msg = messageService.setSold(request.getUserId().toString()).invoke(uuid.toString());
+			isSold = msg.toCompletableFuture().join();
+			
 			return persistentEntities.refFor(RankingEntity.class, uuid.toString()).ask(CreateRanking.of(request));
 		});
 	}

@@ -89,6 +89,7 @@ public class MessageEventProcessor extends CassandraReadSideProcessor<MessageEve
 	public EventHandlers defineEventHandlers(EventHandlersBuilder builder) {
 		LOGGER.info("Setting up read-side event handlers...");
 		builder.setEventHandler(MessageCreated.class, this::processMessageCreated);
+		builder.setEventHandler(MessageSold.class, this::processMessageSold);
 		return builder.build();
 	}
 
@@ -108,4 +109,20 @@ public class MessageEventProcessor extends CassandraReadSideProcessor<MessageEve
 		LOGGER.info("Persisted Message {}", event.getMessage());
 		return completedStatements(Arrays.asList(bindWriteMessage, bindWriteOffset));
 	}
+	
+	private CompletionStage<List<BoundStatement>> processMessageSold(MessageSold event, UUID offset) {
+		BoundStatement bindWriteMessage = writeMessage.bind();
+		bindWriteMessage.setUUID("messageId", event.getMessage().getMessageId());
+		bindWriteMessage.setString("userId", event.getMessage().getUserId());
+		bindWriteMessage.setUUID("itemId", event.getMessage().getItemId());
+		//bindWriteMessage.setString("sellerId", event.getMessage().getSellerId());
+		bindWriteMessage.setString("isSold", event.getMessage().getIsSold());
+		bindWriteMessage.setString("message", event.getMessage().getMessage());
+		bindWriteMessage.setLong("timestamp", event.getMessage().getTimestamp().toEpochMilli());
+		BoundStatement bindWriteOffset = writeOffset.bind(offset);
+		LOGGER.info("Persisted Message {}", event.getMessage());
+		return completedStatements(Arrays.asList(bindWriteMessage, bindWriteOffset));
+	}
+	
+	
 }
