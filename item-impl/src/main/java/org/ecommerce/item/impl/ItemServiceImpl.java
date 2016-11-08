@@ -31,13 +31,19 @@ import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
 import akka.NotUsed;
 import akka.dispatch.OnSuccess;
+import akka.stream.FlowShape;
 import akka.stream.IOResult;
 import akka.stream.Materializer;
+import akka.stream.javadsl.Broadcast;
 import akka.stream.javadsl.FileIO;
+import akka.stream.javadsl.Flow;
+import akka.stream.javadsl.Keep;
+import akka.stream.javadsl.RunnableGraph;
 import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
 import play.libs.streams.Accumulator;
+import play.mvc.Results;
 import scala.concurrent.ExecutionContext;
 
 public class ItemServiceImpl implements ItemService {
@@ -46,13 +52,12 @@ public class ItemServiceImpl implements ItemService {
 
 	private final PersistentEntityRegistry persistentEntities;
 	private final CassandraSession db;
-	// private ExecutionContext ec;
+	private ExecutionContext ec;
 	Materializer materializer;
 
 	@Inject
-	public ItemServiceImpl(Materializer materializer,
-			// ExecutionContext ec,
-			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide, CassandraSession db) {
+	public ItemServiceImpl(Materializer materializer, ExecutionContext ec, PersistentEntityRegistry persistentEntities,
+			CassandraReadSide readSide, CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
 		// this.ec = ec;
@@ -193,10 +198,11 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ServiceCall<Source<ByteString,?>, Accumulator<ByteString, String>> uploadImage(String id) {
+	public ServiceCall<Source<ByteString, ?>, String> uploadImage() {
+		String id = "8f0f288a-436d-4bd8-a8df-aefaa25afc93";
 		return source -> {
 			final Item item = itemGet(id);
-			
+
 			String foldename = "images/";
 			File dir = new File(foldename);
 			if (!dir.isDirectory() || !dir.exists())
@@ -206,43 +212,50 @@ public class ItemServiceImpl implements ItemService {
 			File file = new File(filename);
 			if (file.exists())
 				file.delete();
-			try{
-			file.createNewFile();
-			}catch(Exception ex){}
+			try {
+				file.createNewFile();
 
-			// final FileOutputStream outputStream = new FileOutputStream(file);
-			//
-			// outputStream.flush();
-			// outputStream.close();
+//				final FileOutputStream outputStream = new FileOutputStream(file);
+				
+				Sink<ByteString, CompletionStage<IOResult>> sink =
+						 FileIO.toFile(file);
+				
+				
+				
+				sink = Flow.of(ByteString.class)
+//					    .map(s -> ByteString.fromString(s.toString() + "\n"))
+					    .toMat(sink, Keep.right());
+				
+				source.runWith(sink, materializer);
+				 
+//				Sink<ByteString, CompletionStage<akka.Done>> sink = Sink
+//						.<ByteString>foreach(bytes -> outputStream.write(bytes.toArray()));
+				
+			} catch (Exception ex) {
+			}
 
-			final Sink<ByteString, CompletionStage<IOResult>> sink = FileIO.toFile(file);
-			 return completedFuture(Accumulator.<ByteString, String>fromSink(
-			 sink.mapMaterializedValue(completionStage ->
-			 completionStage.thenApplyAsync(results ->
-			 "file uploaded")
-			 )));
-//			 CompletionStage<IOResult> result = source.runWith(sink,materializer);
-//			 try{
-//			 IOResult resultio = result.toCompletableFuture().get();
-//			 }catch(Exception ex){}
-			//return source.runWith(sink, materializer).thenApplyAsync(results -> "file uploaded");
-
-			// // // // The sink that writes to the output stream
-			// Sink<ByteString, CompletionStage<Done>> sink = Sink
-			// .<ByteString>foreach(bytes ->
-			// outputStream.write(bytes.toArray()));
-			// //
-			// completedFuture(Accumulator.fromSink(sink)).thenCompose(r -> {
+			// CompletionStage<IOResult> result = source.runWith(sink,
+			// materializer);
 			// try {
-			// outputStream.flush();
-			// outputStream.close();
+			// IOResult value = result.toCompletableFuture().get();
 			// } catch (Exception ex) {
 			// }
+
+			// return Accumulator.<ByteString,
+			// String>fromSink(sink.mapMaterializedValue(
+			// completionStage -> completionStage.thenApplyAsync(results ->
+			// "file uploaded")));
+
+			// return source.runWith(sink, materializer).thenApplyAsync(results
+			// -> "file uploaded");
+
+			// // // // The sink that writes to the output stream
+
 			// return completedFuture((Accumulator<ByteString, Done>) r);
 			// });
 			// outputStream.write(request.getBytes());
 
-//			 return completedFuture("Done, file is uploaded!");
+			return completedFuture("Done, file is uploaded!");
 		};
 	}
 }

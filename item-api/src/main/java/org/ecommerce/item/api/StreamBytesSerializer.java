@@ -18,7 +18,10 @@ public class StreamBytesSerializer implements NegotiatedSerializer<Source<ByteSt
 
 	@Override
 	public MessageProtocol protocol() {
-		return new MessageProtocol(Optional.of("multipart/form-data"), Optional.of(charset), Optional.empty());
+		MessageProtocol pro = new MessageProtocol(Optional.of("multipart/form-data"),
+				Optional.of(charset), Optional.empty());
+		
+		return pro;
 	}
 
 	@Override
