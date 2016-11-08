@@ -80,7 +80,8 @@ public interface ItemService extends Service {
     default Descriptor descriptor() {
     	
         return Service.named("itemservice").withCalls(
-        		Service.restCall(Method.GET,  "/api/items/:id", this::getItem),        		
+        		Service.restCall(Method.GET,  "/api/items/:id", this::getItem), 
+        		Service.restCall(Method.POST,  "/api/itemssold/:id", this::setSold),
                 Service.restCall(Method.GET,  "/api/items", this::getAllItems),
                 Service.restCall(Method.GET,  "/api/items/all/:id", this::getAllItemsBy),
                 Service.restCall(Method.POST, "/api/items", this::createItem),
