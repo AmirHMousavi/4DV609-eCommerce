@@ -11,11 +11,11 @@
 <body id="body" ng-controller="mainController" ng-cloak>
   <md-toolbar class= "row" flex = "100">
     <div class="md-toolbar-tools" class= "row" flex = "100">
-      <div flex = "20"><span>E-Commerce App</span></div>
+      <div flex = "20" hide show-gt-md flex><a href="#/items"><span>E-Commerce App</span></a></div>
         <!-- fill up the space between left and right area -->
       <span flex></span>
       <md-tabs id = "main_tabs" md-dynamic-height md-border-bottom flex="80" md-center-tabs ng-if = "currentUser !== ''">
-          <md-tab class "tabItemLabel md-accent" label="ITEMS"  onClick = "goTo('#/items')"></md-tab>
+          <md-tab class "tabItemLabel md-accent" label = "ITEMS"  onClick = "goTo('#/items')"></md-tab>
           <md-tab  label="MY ACCOUNT" onClick = "goTo('#/account')"></md-tab>
           <md-tab  label="DOCUMENTATION" onClick = "goTo('#/documentation')"></md-tab>
           <md-tab  label="MONOLITH BREAKERS" onClick = "goTo('#/us')"></md-tab>
@@ -24,7 +24,7 @@
         <md-button onClick = "logMeIn()">Login/Register</md-button>
       </div>
       <div ng-show = "isLoggedIn === true" layout = "row">
-          <div id = "loggedUserName"><span class = "md-subhead">{{currentUser}}</span></div>
+          <div id = "loggedUserName" hide show-gt-md flex><span hide show-gt-md flex class = "md-subhead">{{currentUser}}</span></div>
           <md-button ng-click = "logMeOut()">Logout</md-button>
       </div>
     </div>

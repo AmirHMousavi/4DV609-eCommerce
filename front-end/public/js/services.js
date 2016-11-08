@@ -124,6 +124,7 @@ angular.module('myApp.services', [])
            * the thype of request
            */
           type : 'items',
+
           /**
            *  getAllItems 
            *  @return Array of items
@@ -134,8 +135,7 @@ angular.module('myApp.services', [])
                 url : Config.url + this.type
               }).then(function successCallback(response) {
                 callback(response.data);
-              }).then(function errorCallback(response) {
-              });
+              }).then(function errorCallback(response) {});
           },
           
           /**
@@ -178,33 +178,63 @@ angular.module('myApp.services', [])
            */
           uploadImageForItem : function(itemID, userName, imageData, callback) {
               //we will stream the image data
-                var exampleSocket = new WebSocket("ws://localhost:9000" + '/items' + '/upload/' + itemID);
-                    exampleSocket.onopen = function (event) {
-                    console.log('this is the event .....');
-                    console.log(event);
-                    exampleSocket.send({image:imageData}); 
+                var uploadSocket = new WebSocket("ws://" + location.host + "/api/itemsupload/" + itemID);
+                //opend the socket and send the message
+                uploadSocket.onopen = function(event) {
+                    //console.log({src:imageData});
+                    uploadSocket.send(imageData); 
                 };
-                exampleSocket.onmessage = function (event) {
-                    console.log(event.data);
-                    console.log('this is the event ..... in error');
-                    console.log(event);
-                    console.log('this was the data recieved');
-                }
-              /*$http({
-                  headers: {"User-Id" : userName},
-                  method : 'POST',
-                  url : Config.url + this.type + '/image/' + itemID,
-                  data : {image:imageData}
-              }).then(function successCallback(response) {
-                  console.log('finally we got the image response;;;;;');
-                  console.log(response);
-                  console.log('the end of image response');
-                  callback(response);
-              }).then(function errorCallback(error) {
-                  console.log('this error happened');
-                  console.log(error);
-              });*/
+                //when the upload is successful
+                uploadSocket.onmessage = function(event) {
+                    //console.log('the upload was successful..!');
+                    //console.log(event.data);
+                    callback(event.data);
+                     //close the connection
+                    uploadSocket.close();
+                };
           },
+
+          /**
+           * downloadImageForItem - gets the image from the server for the specified item
+           */
+          downloadImageForItem : function(itemID, callback) {
+                var downloadSocket = new WebSocket("ws://" + location.host + "/api/itemsdownload/" + itemID);
+                //downloadSocket.onopen = function(event) {};
+                //data comes in chunks so we have to concatinate it
+                var data = "";
+
+                downloadSocket.onmessage = function(event) {
+                    data += event.data;
+                };
+                //when the message is complete all data chunks
+                //are combined in the data variable
+                downloadSocket.onclose = function(event) {
+                    callback(data);
+                }
+          },
+
+          //appends the images to the items
+        /*  prepareItemsToShow : function (items, callback) {
+                var itemImagesFetched = 0;
+                //go through all the items and get their image
+                angular.forEach(items, function(item) {
+                    itemImagesFetched ++;
+                    this.downloadImageForItem(item.id, function(itemURL) {
+                        document.getElementById(item.id).src = itemURL;
+                        
+                        if (itemImagesFetched == items.length) {
+                            //all item images are shown now we can 
+                            //display the items
+                            //$scope.showItems = true;
+                            //since we retrieve the images using web sockets
+                            //the angular digest system isn't aware of the changes
+                            //and it wont update the HTML if we don't call $scope.apply()
+                            //$scope.$apply();
+                            callback(this);
+                        }
+                    });
+                });
+          }, */
 
           /**
            * getItemWithID - returns the given Item
@@ -229,7 +259,9 @@ angular.module('myApp.services', [])
    * This is the Message factory / class
    */
   .factory('Message', ['$http', 'Config', function($http, Config){
+    
     var Message = {
+        
         /**
          * the type  
          */
@@ -263,6 +295,7 @@ angular.module('myApp.services', [])
          */
         sendMessageForItemID : function(userID, itemID, message, callback) {
             $http({
+                headers: {"User-Id" : userID},
                 method : 'POST',
                 url : Config.url + this.type + '/send',
                 data : {userId : userID, itemId : itemID, message : message, isSold : ''}

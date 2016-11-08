@@ -10,10 +10,13 @@
         </div>
     </md-toolbar>
     <div flex = "100" layout = "row" layout-margin>
-        <div id = "itemImgDiv" layout = "column" flex = "50" layout-margin>
-            <img src = "http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" height = "200px" width = "100%"/>
+        <div id = "itemImgDiv" layout = "column" flex = "50" layout-margin ng-show = "showItem == true">
+            <img id = "single_item_{{item.id}}" src = "" height = "200" width = "100%"/>
             <br />
             <div flex-offset = "5"><span class = "md-subhead title">Seller : {{item.userId}}</span></div>
+        </div>
+        <div id = "itemImgDiv" flex = "50" layout-margin ng-show = "showItem == false" layout-align = "center center">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "!displaySendMessage">
             <div><span class = "md-title title">Price : {{item.price |currency}}</span></div>

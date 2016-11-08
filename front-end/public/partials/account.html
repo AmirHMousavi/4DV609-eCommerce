@@ -19,8 +19,8 @@
             <input ng-model = "password" disabled>
         </md-input-container>
     </div>
-    <div ng-show = "showAccountPart == 'items'" layout = "column" flex = "60" flex-offset = "10">
-        <div layout = "row" layout-wrap flex-offset = "10" flex-offset-sm = "0" ng-show = "myItems.length > 0">
+    <div ng-show = "showAccountPart == 'items'" layout = "column" flex = "100" flex-offset = "10">
+        <div layout = "row" layout-wrap flex-offset-sm = "0" ng-show = "myItems.length > 0">
             <md-card ng-repeat="item in myItems" flex = "30" flex-sm = "100" >
                 <md-card-title layout-align = "center center">
                     <md-card-title-text layout-align = "center center">
@@ -29,7 +29,7 @@
                 </md-card-title>
                 <md-card-content layout = "column" layout-align = "center center">
                     <div flex = "100"> 
-                        <img src="http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" heignt = "150" width="150" />
+                        <img id = "{{item.id}}" src = "" heignt = "150" width="150" />
                     </div>
                     <div flex = "100">
                         <span class="md-title"> {{item.price | currency}}</span>
@@ -46,7 +46,7 @@
             <span class = "md-display-2 title"> You don't have any item added yet </span>
         </div>
     </div>
-    <div ng-show = "showAccountPart == 'create'" layout = "column" flex = "60" flex-offset = "10">
+    <div ng-show = "showAccountPart == 'create'" layout = "column" flex = "60" flex-sm = "90" flex-offset = "10">
             <div layout = "column" flex = "100">                
                 <md-input-container class="md-block" flex-gt-xs>
                     <label>Item Name</label>
