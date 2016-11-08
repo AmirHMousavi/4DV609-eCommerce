@@ -104,7 +104,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public ServiceCall<NotUsed, String> getIsSold(String itemId) {
-		final String invalidSold = "null";
+		final String invalidSold = "-1";
 		return (req) -> {
 			LOGGER.info("Looking up all messages");
 			UUID uuid = UUID.fromString(itemId);
@@ -117,10 +117,10 @@ public class MessageServiceImpl implements MessageService {
 								.collect(Collectors.toList());
 						for (Message message : messages) {
 							String soldId = message.getIsSold();
-							if (!soldId.equals(invalidSold))
+							if (soldId.equals(invalidSold))
 								return soldId;
 						}
-						return "-1";
+						return invalidSold;
 					});
 			return result;
 		};
