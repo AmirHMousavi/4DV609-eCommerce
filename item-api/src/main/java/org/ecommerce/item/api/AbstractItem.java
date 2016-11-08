@@ -29,6 +29,10 @@ public interface AbstractItem {
 
     @Value.Parameter
     BigDecimal getPrice();
+    
+    @Value.Parameter
+    String getIsSold();
+    
 
     @Value.Check
     default void check() {

@@ -33,7 +33,7 @@ public class ItemEntity extends PersistentEntity<ItemCommand, ItemEvent, ItemSta
             	String photoName = req.getPhoto();
                 Item item = Item.of(UUID.fromString(entityId()),
                 		req.getUserId(), req.getName(), req.getDescription(), req.getPhoto(),
-                        req.getPrice());
+                        req.getPrice(),"-1");
                 final ItemCreated itemCreated = ItemCreated.builder().item(item).build();
                 LOGGER.info("Processed CreateItem command into ItemCreated event {}", itemCreated);
                 return ctx.thenPersist(itemCreated, evt ->
@@ -57,6 +57,25 @@ public class ItemEntity extends PersistentEntity<ItemCommand, ItemEvent, ItemSta
                     ctx.reply(GetItemReply.of(state().getItem()));
                 }
         );
+        
+        b.setCommandHandler(SetItemSold.class, (cmd, ctx) -> {
+        	String req = cmd.getIsSold();
+        	Item item = state().getItem().get().withIsSold(req);
+        	final ItemSold itemSold = ItemSold.builder().item(item).build();
+        	LOGGER.info("Processed SetItemSold command into ItemSold event {}", itemSold);
+            return ctx.thenPersist(itemSold, evt ->
+                    ctx.reply("sold"));
+        	
+        });
+        
+     // Register event handler for item sold
+        b.setEventHandler(ItemSold.class, evt -> {
+                    LOGGER.info("Processed ItemSold event, updated item state");                    
+                    return state().withItem(evt.getItem())
+                            .withTimestamp(LocalDateTime.now());
+                }
+        );
+
 
         return b.build();
     }

@@ -54,6 +54,11 @@ public interface ItemService extends Service {
     ServiceCall<Source<ByteString,?>, String> uploadImage(String id);
     ServiceCall<NotUsed, Source<ByteString,?>> downloadImage(String id);
     
+    ServiceCall<String, String> setSold(String id);
+    
+    
+    
+       
 //    ServiceCall<String, Accumulator<ByteString, Done>> createImage();
     //ServiceCall<String, String> createImage();
     
@@ -75,7 +80,7 @@ public interface ItemService extends Service {
     default Descriptor descriptor() {
     	
         return Service.named("itemservice").withCalls(
-                Service.restCall(Method.GET,  "/api/items/:id", this::getItem),
+        		Service.restCall(Method.GET,  "/api/items/:id", this::getItem),        		
                 Service.restCall(Method.GET,  "/api/items", this::getAllItems),
                 Service.restCall(Method.GET,  "/api/items/all/:id", this::getAllItemsBy),
                 Service.restCall(Method.POST, "/api/items", this::createItem),

@@ -23,6 +23,14 @@ public interface ItemCommand extends Jsonable {
         @Value.Parameter
         CreateItemRequest getCreateItemRequest();
     }
+    
+    @Value.Immutable
+    @ImmutableStyle
+    @JsonDeserialize
+    public interface AbstractSetItemSold extends ItemCommand, CompressedJsonable, PersistentEntity.ReplyType<String> {
+        @Value.Parameter
+        String getIsSold();
+    }
 
     @Value.Immutable(singleton = true)
     @ImmutableStyle

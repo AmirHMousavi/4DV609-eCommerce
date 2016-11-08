@@ -53,7 +53,7 @@ public class ItemEventProcessor extends CassandraReadSideProcessor<ItemEvent> {
         LOGGER.info("Creating Cassandra tables...");
         return session.executeCreateTable(
                 "CREATE TABLE IF NOT EXISTS item ("
-                        + "itemId uuid, userId text, name text, description text, photo text, price decimal, PRIMARY KEY (itemId, userId))")
+                        + "itemId uuid, userId text, name text, description text, photo text, price decimal, issold text, PRIMARY KEY (itemId, userId))")
                 .thenCompose(a -> session.executeCreateTable(
                         "CREATE TABLE IF NOT EXISTS item_offset ("
                                 + "partition int, offset timeuuid, PRIMARY KEY (partition))"));
@@ -61,7 +61,7 @@ public class ItemEventProcessor extends CassandraReadSideProcessor<ItemEvent> {
 
     private CompletionStage<Done> prepareWriteItem(CassandraSession session) {
         LOGGER.info("Inserting into read-side table item...");
-        return session.prepare("INSERT INTO item (itemId, userId, name, description, photo, price) VALUES (?, ?, ?, ?, ?, ?)").thenApply(ps -> {
+        return session.prepare("INSERT INTO item (itemId, userId, name, description, photo, price, issold) VALUES (?, ?, ?, ?, ?, ?, ?)").thenApply(ps -> {
             setWriteItem(ps);
             return Done.getInstance();
         });
@@ -89,12 +89,14 @@ public class ItemEventProcessor extends CassandraReadSideProcessor<ItemEvent> {
     public EventHandlers defineEventHandlers(EventHandlersBuilder builder) {
         LOGGER.info("Setting up read-side event handlers...");
         builder.setEventHandler(ItemCreated.class, this::processItemCreated);
+        builder.setEventHandler(ItemSold.class, this::processItemSold);
         return builder.build();
     }
 
     /**
      * Write a persistent event into the read-side optimized database.
      */
+    
     private CompletionStage<List<BoundStatement>> processItemCreated(ItemCreated event, UUID offset) {
         BoundStatement bindWriteItem = writeItem.bind();
         bindWriteItem.setUUID("itemId", event.getItem().getId());
@@ -103,6 +105,22 @@ public class ItemEventProcessor extends CassandraReadSideProcessor<ItemEvent> {
         bindWriteItem.setString("description", event.getItem().getDescription());
         bindWriteItem.setString("photo", event.getItem().getPhoto());
         bindWriteItem.setDecimal("price", event.getItem().getPrice());
+        bindWriteItem.setString("issold", event.getItem().getIsSold());
+        
+        BoundStatement bindWriteOffset = writeOffset.bind(offset);
+        LOGGER.info("Persisted Item {}", event.getItem());
+        return completedStatements(Arrays.asList(bindWriteItem, bindWriteOffset));
+    }
+    
+    private CompletionStage<List<BoundStatement>> processItemSold(ItemSold event, UUID offset) {
+        BoundStatement bindWriteItem = writeItem.bind();
+        bindWriteItem.setUUID("itemId", event.getItem().getId());
+        bindWriteItem.setString("userId", event.getItem().getUserId());        
+        bindWriteItem.setString("name", event.getItem().getName());
+        bindWriteItem.setString("description", event.getItem().getDescription());
+        bindWriteItem.setString("photo", event.getItem().getPhoto());
+        bindWriteItem.setDecimal("price", event.getItem().getPrice());
+        bindWriteItem.setString("issold", event.getItem().getIsSold());
         
         BoundStatement bindWriteOffset = writeOffset.bind(offset);
         LOGGER.info("Persisted Item {}", event.getItem());

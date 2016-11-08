@@ -4,6 +4,9 @@ import static org.ecommerce.security.ServerSecurity.authenticated;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
+import org.ecommerce.message.api.MessageService;
+import org.ecommerce.message.api.Message;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -54,14 +57,17 @@ public class ItemServiceImpl implements ItemService {
 	private final CassandraSession db;
 	private ExecutionContext ec;
 	Materializer materializer;
+	MessageService messageService;
 
 	@Inject
-	public ItemServiceImpl(Materializer materializer, ExecutionContext ec, PersistentEntityRegistry persistentEntities,
+	public ItemServiceImpl(MessageService messageService,
+			Materializer materializer, ExecutionContext ec, PersistentEntityRegistry persistentEntities,
 			CassandraReadSide readSide, CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
 		// this.ec = ec;
 		this.materializer = materializer;
+		this.messageService = messageService;
 
 		persistentEntities.register(ItemEntity.class);
 		readSide.register(ItemEventProcessor.class);
@@ -73,8 +79,13 @@ public class ItemServiceImpl implements ItemService {
 		return (req) -> {
 			return persistentEntities.refFor(ItemEntity.class, id).ask(GetItem.of()).thenApply(reply -> {
 				LOGGER.info(String.format("Looking up item %s", id));
-				if (reply.getItem().isPresent())
-					return reply.getItem().get();
+				if (reply.getItem().isPresent()){
+					Item item =  reply.getItem().get();
+					CompletionStage<String> msg = messageService.getIsSold(id)
+							.invoke(NotUsed.getInstance());
+					String isSold = msg.toCompletableFuture().join();
+					return item.withIsSold(isSold);
+				}
 				else
 					throw new NotFound(String.format("No item found for id %s", id));
 			});
@@ -86,11 +97,11 @@ public class ItemServiceImpl implements ItemService {
 		return (req) -> {
 			// LOGGER.info("Looking up all items");
 			CompletionStage<PSequence<Item>> result = db
-					.selectAll("SELECT itemId, userId, name, description, photo, price FROM item").thenApply(rows -> {
+					.selectAll("SELECT * FROM item").thenApply(rows -> {
 						List<Item> items = rows.stream()
 								.map(row -> Item.of(row.getUUID("itemId"), row.getString("userId"),
 										row.getString("name"), row.getString("description"), row.getString("photo"),
-										row.getDecimal("price")))
+										row.getDecimal("price"), row.getString("issold")))
 								.collect(Collectors.toList());
 						return TreePVector.from(items);
 					});
@@ -107,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
 						List<Item> items = rows.stream()
 								.map(row -> Item.of(row.getUUID("itemId"), row.getString("userId"),
 										row.getString("name"), row.getString("description"), row.getString("photo"),
-										row.getDecimal("price")))
+										row.getDecimal("price"), row.getString("issold")))
 								.collect(Collectors.toList());
 						return TreePVector.from(items);
 					});
@@ -161,6 +172,10 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	public ServiceCall<String, String> setSold(String id) {
+		return null;
+	}
+	@Override
 	// public ServiceCall<String, String> createImage() {
 	public ServiceCall<ByteString, String> createImage(String id) {
 
@@ -202,13 +217,11 @@ public class ItemServiceImpl implements ItemService {
 		return notused -> {
 			final Item item = itemGet(id);
 			
-			
-			
 			String filename = "images/image_" + id + "_" + item.getPhoto();
 			File file = new File(filename);
 			
-			Source<ByteString, CompletionStage<IOResult>> source = FileIO.fromFile(file);			
-			
+			Source<ByteString, ?> source = FileIO.fromFile(file);
+						
 //			FileInputStream is = new FileInputStream(file);
 //			int noOfBytes = is.available();
 //			byte[] array = new byte[noOfBytes];
@@ -222,7 +235,7 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ServiceCall<Source<ByteString, ?>, String> uploadImage(String id) {
-		// String id = "c81862f2-40f2-4f92-b1df-52170b654d4d";
+		
 		return source -> {
 			final Item item = itemGet(id);
 

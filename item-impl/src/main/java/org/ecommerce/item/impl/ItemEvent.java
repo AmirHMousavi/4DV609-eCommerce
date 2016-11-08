@@ -33,4 +33,23 @@ public interface ItemEvent extends Jsonable, AggregateEvent<ItemEvent> {
             return Instant.now();
         }
     }
+	
+	@Value.Immutable
+    @ImmutableStyle
+    @JsonDeserialize
+    interface AbstractItemSold extends ItemEvent {
+    	
+        @Override
+        default AggregateEventTag<ItemEvent> aggregateTag() {
+            return ItemEventTag.INSTANCE;
+        }
+
+        @Value.Parameter
+        Item getItem();
+
+        @Value.Default
+        default Instant getTimestamp() {
+            return Instant.now();
+        }
+    }
 }
