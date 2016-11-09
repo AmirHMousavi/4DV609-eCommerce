@@ -10,7 +10,8 @@ define(['angular'], function(angular) {
 // In this case it is a simple value service.
 angular.module('myApp.services', [])
   //value('version', '0.1')
-  .factory('Config', [function(){
+  .factory('Config', [function() {
+
     var Config = {
         //this should be the hosting URL for NOW is localhost
         url : "http://localhost:9000/api/"
@@ -19,7 +20,7 @@ angular.module('myApp.services', [])
     return Config;
 }])
 
-  .factory('User', ['$http', 'Config', function($http, Config){
+  .factory('User', ['$http', 'Config', function($http, Config) {
 
     var User = {
 
@@ -117,7 +118,8 @@ angular.module('myApp.services', [])
   /**
    * This is the Item factory / class
    */
-  .factory('Item', ['$http', 'Config', function($http, Config){
+  .factory('Item', ['$http', 'Config', function($http, Config) {
+
       var Item = { 
 
           /**
@@ -186,9 +188,9 @@ angular.module('myApp.services', [])
                 };
                 //when the upload is successful
                 uploadSocket.onmessage = function(event) {
-                    //console.log('the upload was successful..!');
-                    //console.log(event.data);
-                    callback(event.data);
+                    console.log('the message is going .......');
+                    console.log('closing the socket......');
+                    callback({status:"success"});
                      //close the connection
                     uploadSocket.close();
                 };
@@ -199,7 +201,6 @@ angular.module('myApp.services', [])
            */
           downloadImageForItem : function(itemID, callback) {
                 var downloadSocket = new WebSocket("ws://" + location.host + "/api/itemsdownload/" + itemID);
-                //downloadSocket.onopen = function(event) {};
                 //data comes in chunks so we have to concatinate it
                 var data = "";
 
@@ -212,29 +213,6 @@ angular.module('myApp.services', [])
                     callback(data);
                 }
           },
-
-          //appends the images to the items
-        /*  prepareItemsToShow : function (items, callback) {
-                var itemImagesFetched = 0;
-                //go through all the items and get their image
-                angular.forEach(items, function(item) {
-                    itemImagesFetched ++;
-                    this.downloadImageForItem(item.id, function(itemURL) {
-                        document.getElementById(item.id).src = itemURL;
-                        
-                        if (itemImagesFetched == items.length) {
-                            //all item images are shown now we can 
-                            //display the items
-                            //$scope.showItems = true;
-                            //since we retrieve the images using web sockets
-                            //the angular digest system isn't aware of the changes
-                            //and it wont update the HTML if we don't call $scope.apply()
-                            //$scope.$apply();
-                            callback(this);
-                        }
-                    });
-                });
-          }, */
 
           /**
            * getItemWithID - returns the given Item
@@ -261,7 +239,7 @@ angular.module('myApp.services', [])
   .factory('Message', ['$http', 'Config', function($http, Config){
     
     var Message = {
-        
+
         /**
          * the type  
          */

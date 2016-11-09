@@ -1,3 +1,4 @@
+<div ng-if = "showUploadingItemIndicator == true" flex = "100"><md-progress-linear class = "md-accent" md-mode="indeterminate"></md-progress-linear></div>
 <div id = "accountTabs" ng-show = "isLoggedIn">
     <md-tabs>
         <md-tab ng-click = "changeAccountView('profile')"><span class="tabItemLabel">Profile</span>
@@ -47,7 +48,7 @@
         </div>
     </div>
     <div ng-show = "showAccountPart == 'create'" layout = "column" flex = "60" flex-sm = "90" flex-offset = "10">
-            <div layout = "column" flex = "100">                
+            <div layout = "column" flex = "100">
                 <md-input-container class="md-block" flex-gt-xs>
                     <label>Item Name</label>
                     <input ng-model = "itemName" required>
