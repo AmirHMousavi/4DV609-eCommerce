@@ -14,7 +14,7 @@ import com.lightbend.lagom.serialization.Jsonable;
 public interface AbstractCreateRankingRequest extends Jsonable {
 
 	@Value.Parameter
-	String getUserId();
+	UUID getMessageId();
 
 	@Value.Parameter
 	UUID getItemId();

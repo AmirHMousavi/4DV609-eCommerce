@@ -45,7 +45,7 @@ public class RankingServiceImpl implements RankingService {
 		this.itemService = itemService;
 
 		persistentEntities.register(RankingEntity.class);
-
+		readSide.register(RankingEventProcessor.class);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class RankingServiceImpl implements RankingService {
 			CompletionStage<String> msg = itemService.setSold(request.getItemId().toString()).invoke(uuid.toString());
 			String isSold = msg.toCompletableFuture().join();
 
-			msg = messageService.setSold(request.getUserId().toString()).invoke(uuid.toString());
+			msg = messageService.setSold(request.getMessageId().toString()).invoke(uuid.toString());
 			isSold = msg.toCompletableFuture().join();
 			
 			return persistentEntities.refFor(RankingEntity.class, uuid.toString()).ask(CreateRanking.of(request));

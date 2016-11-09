@@ -18,7 +18,7 @@ public interface AbstractRanking {
 	UUID getRankingId();
 
 	@Value.Parameter
-	String getUserId();
+	UUID getMessageId();
 
 	@Value.Parameter
 	UUID getItemId();

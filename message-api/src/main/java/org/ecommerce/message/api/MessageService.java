@@ -33,6 +33,7 @@ public interface MessageService extends Service {
 	
 	ServiceCall<NotUsed, PSequence<Message>> getAllMessagesByUserId(String userId);
 	
+	
 	ServiceCall<String, String> setSold(String id);
 	
 

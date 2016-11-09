@@ -40,7 +40,7 @@ public class RankingEntity extends PersistentEntity<RankingCommand, RankingEvent
 
 					CreateRankingRequest req = cmd.getCreateRankingRequest();
 
-					Ranking ranking = Ranking.of(UUID.fromString(entityId()), req.getUserId(), req.getItemId(),
+					Ranking ranking = Ranking.of(UUID.fromString(entityId()), req.getMessageId(), req.getItemId(),
 							req.getRating());
 					final RankingCreated rankingCreated = RankingCreated.builder().ranking(ranking).build();
 					LOGGER.info("Processed CreateRanking command into RankingCreated event {}", rankingCreated);
@@ -83,12 +83,11 @@ public class RankingEntity extends PersistentEntity<RankingCommand, RankingEvent
 			ctx.reply(GetRankingReply.of(state().getRanking()));
 		});
 
-		b.setCommandHandler(ChangeRanking.class, (cmd, ctx) -> ctx.thenPersist(RankingChanged.of(
-				state().getRanking().get().withRating(cmd.getRating())),
-				evt -> ctx.reply(Done.getInstance())));
-		
-		b.setEventHandler(RankingChanged.class, evt -> state().withRanking(evt.getRanking()));
+		b.setCommandHandler(ChangeRanking.class,
+				(cmd, ctx) -> ctx.thenPersist(RankingChanged.of(state().getRanking().get().withRating(cmd.getRating())),
+						evt -> ctx.reply(Done.getInstance())));
 
+		b.setEventHandler(RankingChanged.class, evt -> state().withRanking(evt.getRanking()));
 
 		return b.build();
 	}
