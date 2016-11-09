@@ -94,15 +94,34 @@ controllers.LoginCtrl.$inject = ['$scope', '$rootScope', '$mdToast', 'Config','U
 
 controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, User) 
 {
-    $scope.items = {};
+    $scope.showItems = false;
+    $scope.items = [];
     //this is what is loaded when the Items page is ready
     //we get all the items
     angular.element(document).ready(function () {
+        //get all the items
         Item.getAllItems(function(response){
             $scope.items = response;
-            console.log('this is all items........');
-            console.log(response);
-            console.log('end of all items.........');
+            var itemImagesFetched = 0;
+            //go through all the items and get their image
+            //IT WOULD BE BETTER IF WE DO THIS IN Items class
+            angular.forEach($scope.items, function(item) {
+                itemImagesFetched ++;
+                Item.downloadImageForItem(item.id, function(imageData) {
+                    //get the item img element and update the src to show the picture
+                    document.getElementById(item.id).src = imageData;
+                    //check if all item images have been fetched
+                    if (itemImagesFetched == $scope.items.length) {
+                        //all item images are shown now we can 
+                        //display the items
+                        $scope.showItems = true;
+                        //since we retrieve the images using web sockets
+                        //the angular digest system isn't aware of the changes
+                        //and it wont update the HTML if we don't call $scope.apply()
+                        $scope.$apply();
+                    }
+                });
+            });
         });
     });
 
@@ -132,11 +151,20 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
 
         Item.getItemWithID(selectedItemID, function(item) {
             $scope.item = item;
+            $scope.showItem = false;
+        
+            //get the item image
+            Item.downloadImageForItem(item.id, function(imageData) {
+                //get the item img element and update the src to show the picture
+                document.getElementById("single_item_" + item.id).src = imageData;
+                console.log("this is item id::" + item.id);
+                $scope.showItem = true;
+                $scope.$apply();
+            });
+
             if (item.userId == User.getLoggedUserName()) {
                 $scope.isMyItem = true;
             }
-            console.log('this is the item sir');
-            console.log(item);
         });
 
         //close the mdDialog popup
@@ -186,6 +214,27 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
         if ($rootScope.isLoggedIn) {
             Item.getMyItems($scope.username, function(response) {
                 $scope.myItems = response;
+                var itemImagesFetched = 0;                
+                //IT WOULD BE BETTER IF WE DO THIS IN Items class
+                angular.forEach($scope.myItems, function(item) {
+                    itemImagesFetched ++;
+                    Item.downloadImageForItem(item.id, function(imageData) {
+                        //get the item img element and update the src to show the picture
+                        document.getElementById(item.id).src = imageData;
+                        //check if all item images have been fetched
+                        if ($scope.items != undefined) {
+                            if (itemImagesFetched == $scope.items.length) {
+                                //all item images are shown now we can 
+                                //display the items
+                                $scope.showItems = true;
+                                //since we retrieve the images using web sockets
+                                //the angular digest system isn't aware of the changes
+                                //and it wont update the HTML if we don't call $scope.apply()
+                                $scope.$apply();
+                            }
+                        }
+                    });
+                });
             });
             $scope.isLoggedIn = true;
         }
@@ -194,72 +243,39 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
             //document.location = "#/";
             $scope.isLoggedIn = false;
         } 
-        /*
-        var exampleSocket = new WebSocket("ws://localhost/:9000" + '/items' + '/upload' + "/d8371437-c3dd-4e0f-9859-529103d3e23d");
-        exampleSocket.onopen = function (event) {
-            exampleSocket.send("This is what we want to send"); 
-        };
-        exampleSocket.onmessage = function (event) {
-           console.log(event.data);
-           console.log('this was the data recieved');
-        } */
-        //testing the web sockets
-        /*createStream(this.type + '/upload' + "/29999", function(stream) {
-            alert('this is the stream');
-            stream.send(JSON.stringify({id: "22222222222222" }));
-        });*/
     });
-
-    function createStream(path, onopen) {
-        return {
-            connect: function(onChirp) {
-                alert('this is the file ::' + path);
-                var stream = new WebSocket("ws://" + location.host + path);
-                if (onopen) {
-                    stream.onopen = function(event) {
-                        onopen(stream, event);
-                    }.bind(this);
-                }
-                stream.onmessage = function(event) {
-                    var chirp = JSON.parse(event.data);
-                    onChirp(chirp);
-                    console.log('this is the answer ::: +' +chirp);
-                }.bind(this);
-                return {
-                    close: function() {
-                        stream.close();
-                    }
-                }
-            }
-        };
-    }
-
 
     //triggered when we want to upload a new item
     $scope.uploadItem = function() {
+        $scope.showUploadingItemIndicator = false;
         //we get the file/image we want to upload
         var file    = document.querySelector('input[type=file]').files[0];
         var reader  = new FileReader();
 
         if (file) {
-           reader.readAsDataURL(file); //reads the data as a URL
+            //reads the data as a URL
+           reader.readAsDataURL(file);
         }
 
+        //when the image is ready to be uploaded
         reader.onloadend = function () {
+            $scope.showUploadingItemIndicator = true;
             Item.uploadItem($scope.username, $scope.itemName, $scope.itemDescription, 
                 $scope.itemPrice, file.name, function(newItem) {
                 if (newItem !== undefined) {
                     //it was successful we can show a message that it was successful
                     //empty out the inputs
-                    $scope.itemName = "";
-                    $scope.itemDescription = "";
-                    $scope.itemPrice = "";
-                    $mdToast.show($mdToast.simple().content("Item was uploaded successfuly!"));
-                    $scope.myItems.push(newItem);
                     //then we have to upload the image for the item
                     Item.uploadImageForItem(newItem.itemID, $scope.username, reader.result, function(response) {
-                        alert('image has been uploaded');
+                        console.log('image has been uploaded');
                         console.log(response);
+                        $scope.showUploadingItemIndicator = false;
+                        $scope.itemName = "";
+                        $scope.itemDescription = "";
+                        $scope.itemPrice = "";
+                        $mdToast.show($mdToast.simple().content("ITEM WAS UPLOADED SUCCESSUFLLY!"));
+                        $scope.myItems.push(newItem);
+                        $scope.$apply();
                     });   
                 }
             });
@@ -279,12 +295,21 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
     //the controller that controlls the popup
     var itemSelectedCtrl = function($scope, selectedItemID) {
         $scope.showNoMessagesForItem = false;
+        $scope.showItem = false;
         $scope.messages = [];
         //on pop up start
         angular.element(document).ready(function () {
             //get the selected item
             Item.getItemWithID(selectedItemID, function(item) {
                 $scope.item = item;
+                //get the item image
+                Item.downloadImageForItem(item.id, function(imageData) {
+                    $scope.showItem = true;
+                    //get the item img element and update the src to show the picture
+                    document.getElementById("single_item_" + item.id).src = imageData;
+                    console.log("this is item id::" + item.id);
+                    $scope.$apply();
+                });
             });
 
             //we should get the messages for this item
