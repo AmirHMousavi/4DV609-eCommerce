@@ -69,8 +69,12 @@ public class RankingServiceImpl implements RankingService {
 	public ServiceCall<CreateRankingRequest, Done> setRanking(String rankingId) {
 		return authenticated(userId -> request -> {
 			LOGGER.info("Rating a seller: ", request);
+			CompletionStage<Item> itemStage = itemService.getItem(request.getItemId().toString()).invoke();
+			Item item = itemStage.toCompletableFuture().join();
+			CompletionStage<Done> stage = userService.setRank(item.getUserId()).invoke(request.getRating());
+			Done done = stage.toCompletableFuture().join();
 			// UUID uuid = UUID.fromString(rankingId);
-			// BigDecimal bigdecimal =
+			// BigDecimal bigdecimal
 			// BigDecimal.valueOf(Long.parseLong(request));
 			return persistentEntities.refFor(RankingEntity.class, rankingId).ask(ChangeRanking.of(request.getRating()));
 		});
@@ -86,7 +90,7 @@ public class RankingServiceImpl implements RankingService {
 
 			msg = messageService.setSold(request.getMessageId().toString()).invoke(uuid.toString());
 			isSold = msg.toCompletableFuture().join();
-			
+
 			return persistentEntities.refFor(RankingEntity.class, uuid.toString()).ask(CreateRanking.of(request));
 		});
 	}
