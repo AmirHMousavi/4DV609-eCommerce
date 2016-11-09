@@ -15,6 +15,8 @@ import org.ecommerce.item.api.ItemService;
 import org.ecommerce.item.api.Item;
 import org.ecommerce.message.api.Message;
 import org.ecommerce.message.api.MessageService;
+import org.ecommerce.user.api.User;
+import org.ecommerce.user.api.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +37,16 @@ public class RankingServiceImpl implements RankingService {
 	private final CassandraSession db;
 	MessageService messageService;
 	ItemService itemService;
+	UserService userService;
 
 	@Inject
-	public RankingServiceImpl(ItemService itemService, MessageService messageService,
+	public RankingServiceImpl(ItemService itemService, MessageService messageService, UserService userService,
 			PersistentEntityRegistry persistentEntities, CassandraReadSide readSide, CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
 		this.messageService = messageService;
 		this.itemService = itemService;
+		this.userService = userService;
 
 		persistentEntities.register(RankingEntity.class);
 		readSide.register(RankingEventProcessor.class);
