@@ -28,6 +28,6 @@ public interface AbstractRanking {
 
 	@Value.Check
 	default void check() {
-		Preconditions.checkState(getRating().intValue() <= 5 && getRating().intValue() != 0, "Rating must be between 1 and 5");
+		Preconditions.checkState(getRating().intValue() <= 5, "Rating must be between 1 and 5");
 	}
 }
