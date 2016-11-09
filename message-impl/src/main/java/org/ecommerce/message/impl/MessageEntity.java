@@ -57,7 +57,25 @@ public class MessageEntity extends PersistentEntity<MessageCommand, MessageEvent
 			ctx.reply(GetMessageReply.of(state().getMessage()));
 
 		});
-
+		
+		 b.setCommandHandler(SetMessageSold.class, (cmd, ctx) -> {
+	        	String req = cmd.getIsSold();
+	        	Message message = state().getMessage().get().withIsSold(req);
+	        	final MessageSold messageSold = MessageSold.builder().message(message).build();
+	        	LOGGER.info("Processed SetMessageSold command into MessageSold event {}", messageSold);
+	            return ctx.thenPersist(messageSold, evt ->
+	                    ctx.reply("sold"));
+	        	
+	        });
+	        
+	     // Register event handler for item sold
+	        b.setEventHandler(MessageSold.class, evt -> {
+	                    LOGGER.info("Processed MessageSold event, updated message state");                    
+	                    return state().withMessage(evt.getMessage())
+	                            .withTimestamp(LocalDateTime.now());
+	                }
+	        );
+	
 		return b.build();
 	}
 }

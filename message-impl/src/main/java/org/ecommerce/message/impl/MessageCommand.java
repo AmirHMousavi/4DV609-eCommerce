@@ -24,6 +24,17 @@ public interface MessageCommand extends Jsonable {
 		@Value.Parameter
 	    CreateMessageRequest getCreateMessageRequest();
 	}
+	
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize
+	public interface AbstractSetMessageSold
+			extends MessageCommand, CompressedJsonable, PersistentEntity.ReplyType<String> {
+
+		@Value.Parameter
+	    String getIsSold();
+	}
+	
 
 	@Value.Immutable(singleton = true)
 	@ImmutableStyle

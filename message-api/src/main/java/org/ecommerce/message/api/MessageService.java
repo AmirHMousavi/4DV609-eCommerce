@@ -33,6 +33,8 @@ public interface MessageService extends Service {
 	
 	ServiceCall<NotUsed, PSequence<Message>> getAllMessagesByUserId(String userId);
 	
+	ServiceCall<String, String> setSold(String id);
+	
 
 	@Override
 	default Descriptor descriptor() {
@@ -41,6 +43,7 @@ public interface MessageService extends Service {
 				Service.restCall(Method.GET, "/api/message/:messageId", this::getMessage),
 				Service.restCall(Method.GET, "/api/message/all/list", this::getAllMessages),
 				Service.restCall(Method.GET, "/api/message/all/:itemId", this::getAllMessagesByItemId),
+				Service.restCall(Method.POST,  "/api/messagesold/:id", this::setSold),
 				Service.restCall(Method.GET, "/api/message/all/sold/:itemId",this::getIsSold),
 				Service.restCall(Method.GET, "/api/message/all/by/:userId", this::getAllMessagesByUserId))
 				.withAutoAcl(true).withHeaderFilter(SecurityHeaderFilter.INSTANCE);

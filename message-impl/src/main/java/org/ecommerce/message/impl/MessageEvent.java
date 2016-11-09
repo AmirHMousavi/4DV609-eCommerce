@@ -29,4 +29,23 @@ public interface MessageEvent extends Jsonable, AggregateEvent<MessageEvent> {
 			return Instant.now();
 		}
 	}
+
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize
+	interface AbstractMessageSold extends MessageEvent {
+		@Override
+		default AggregateEventTag<MessageEvent> aggregateTag() {
+			return MessageEventTag.INSTANCE;
+		}
+
+		@Value.Parameter
+		Message getMessage();
+
+		@Value.Default
+		default Instant getTimestamp() {
+			return Instant.now();
+		}
+	}
+
 }
