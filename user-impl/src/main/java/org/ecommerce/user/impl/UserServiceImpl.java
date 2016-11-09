@@ -1,6 +1,9 @@
 package org.ecommerce.user.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
+import akka.Done;
 import akka.NotUsed;
 
 public class UserServiceImpl implements UserService {
@@ -73,6 +77,37 @@ public class UserServiceImpl implements UserService {
 		return request -> {
 			LOGGER.info("Creating user: {}", request);
 			return persistentEntities.refFor(UserEntity.class, request.getUserId()).ask(CreateUser.of(request));
+		};
+	}
+
+	@Override
+	public ServiceCall<BigDecimal, Done> setRank(String userId) {
+
+		return request -> {
+			LOGGER.info("one rank value arrived");
+			return persistentEntities.refFor(UserEntity.class, userId).ask(SetRank.of(request));
+		};
+	}
+
+	@Override
+	public ServiceCall<NotUsed, Double> getAvarageRank(String userId) {
+		
+		return request->{
+		CompletionStage<User> stage= persistentEntities.refFor(UserEntity.class, userId).ask(GetUser.of()).thenApply(reply -> {
+				LOGGER.info(String.format("Looking up user %s", userId));
+				if (reply.getUser().isPresent())
+					return reply.getUser().get();
+				else
+					throw new NotFound(String.format("User %s , User-ID or Password is wrong", userId));
+			});
+		ArrayList<BigDecimal> userRanks=stage.toCompletableFuture().join().getRanks();
+			double avg = 0;
+		if(!userRanks.isEmpty()){
+			BigDecimal sumResult = userRanks.stream()
+			        .reduce(BigDecimal.ZERO, BigDecimal::add);
+			 avg=1.0d *sumResult.intValue()/userRanks.size();
+		}
+		return CompletableFuture.completedFuture(avg);
 		};
 	}
 }

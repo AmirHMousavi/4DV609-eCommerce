@@ -1,5 +1,7 @@
 package org.ecommerce.user.api;
 
+import java.math.BigDecimal;
+
 import org.ecommerce.security.SecurityHeaderFilter;
 import org.pcollections.PSequence;
 
@@ -8,6 +10,7 @@ import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
+import akka.Done;
 import akka.NotUsed;
 
 public interface UserService extends Service {
@@ -27,6 +30,9 @@ public interface UserService extends Service {
 	 * '{"userId": "user1", "password": "1234"}' http://localhost:9000/api/users
 	 */
 	ServiceCall<CreateUserRequest, CreateUserResponse> createUser();
+	
+	ServiceCall<BigDecimal, Done> setRank(String userId);
+	ServiceCall<NotUsed, Double> getAvarageRank(String userId);
 
 
 	/**
@@ -44,7 +50,9 @@ public interface UserService extends Service {
 		return Service.named("userservice")
 				.withCalls(Service.restCall(Method.GET, "/api/users/login/:id/:password", this::getUser),
 						Service.restCall(Method.GET, "/api/users/list", this::getAllUsers),
-						Service.restCall(Method.POST, "/api/users", this::createUser))
+						Service.restCall(Method.POST, "/api/users", this::createUser),
+				Service.restCall(Method.POST, "/api/users/setrank/:userId", this::setRank),
+				Service.restCall(Method.GET, "/api/users/avgrank/:userId", this::getAvarageRank))
 				.withAutoAcl(true).withHeaderFilter(SecurityHeaderFilter.INSTANCE);
 	}
 }

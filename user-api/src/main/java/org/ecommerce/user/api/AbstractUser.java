@@ -1,5 +1,8 @@
 package org.ecommerce.user.api;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -15,6 +18,9 @@ public interface AbstractUser {
 
 	@Value.Parameter
 	String getPassword();
+	
+	@Value.Parameter
+	ArrayList<BigDecimal> getRanks();
 	
 
 	@Value.Check

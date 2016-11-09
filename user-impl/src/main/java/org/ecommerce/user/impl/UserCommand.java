@@ -1,5 +1,6 @@
 package org.ecommerce.user.impl;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.ecommerce.user.api.CreateUserRequest;
@@ -12,6 +13,8 @@ import com.lightbend.lagom.javadsl.immutable.ImmutableStyle;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
+
+import akka.Done;
 
 public interface UserCommand extends Jsonable {
 
@@ -39,5 +42,15 @@ public interface UserCommand extends Jsonable {
 
 		@Value.Parameter
 		Optional<User> getUser();
+	}
+	
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize(as = SetRank.class)
+	public interface AbstractSetRank
+			extends UserCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+
+		@Value.Parameter
+		BigDecimal getTheRank();
 	}
 }

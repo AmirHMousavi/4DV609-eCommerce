@@ -1,5 +1,6 @@
 package org.ecommerce.user.impl;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 import org.ecommerce.user.api.User;
@@ -17,6 +18,24 @@ public interface UserEvent extends Jsonable, AggregateEvent<UserEvent> {
 	@ImmutableStyle
 	@JsonDeserialize
 	interface AbstractUserCreated extends UserEvent {
+		@Override
+		default AggregateEventTag<UserEvent> aggregateTag() {
+			return UserEventTag.INSTANCE;
+		}
+
+		@Value.Parameter
+		User getUser();
+
+		@Value.Default
+		default Instant getTimestamp() {
+			return Instant.now();
+		}
+	}
+	
+	@Value.Immutable
+	@ImmutableStyle
+	@JsonDeserialize
+	interface AbstractRankCreated extends UserEvent {
 		@Override
 		default AggregateEventTag<UserEvent> aggregateTag() {
 			return UserEventTag.INSTANCE;
