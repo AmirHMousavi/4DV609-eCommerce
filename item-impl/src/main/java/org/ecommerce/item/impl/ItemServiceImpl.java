@@ -4,8 +4,7 @@ import static org.ecommerce.security.ServerSecurity.authenticated;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
-import org.ecommerce.message.api.MessageService;
-import org.ecommerce.message.api.Message;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,34 +56,27 @@ public class ItemServiceImpl implements ItemService {
 	private final CassandraSession db;
 	private ExecutionContext ec;
 	Materializer materializer;
-	MessageService messageService;
-
+	
 	@Inject
-	public ItemServiceImpl(MessageService messageService,
+	public ItemServiceImpl(
 			Materializer materializer, ExecutionContext ec, PersistentEntityRegistry persistentEntities,
 			CassandraReadSide readSide, CassandraSession db) {
 		this.persistentEntities = persistentEntities;
 		this.db = db;
-		// this.ec = ec;
+		this.ec = ec;
 		this.materializer = materializer;
-		this.messageService = messageService;
-
+		
 		persistentEntities.register(ItemEntity.class);
 		readSide.register(ItemEventProcessor.class);
 	}
 
 	@Override
 	public ServiceCall<NotUsed, Item> getItem(String id) {
-
 		return (req) -> {
 			return persistentEntities.refFor(ItemEntity.class, id).ask(GetItem.of()).thenApply(reply -> {
 				LOGGER.info(String.format("Looking up item %s", id));
 				if (reply.getItem().isPresent()){
-					Item item =  reply.getItem().get();
-					CompletionStage<String> msg = messageService.getIsSold(id)
-							.invoke(NotUsed.getInstance());
-					String isSold = msg.toCompletableFuture().join();
-					return item.withIsSold(isSold);
+					return reply.getItem().get();
 				}
 				else
 					throw new NotFound(String.format("No item found for id %s", id));
