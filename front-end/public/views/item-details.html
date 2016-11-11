@@ -19,13 +19,19 @@
             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "!displaySendMessage">
-            <div><span class = "md-title title">Price : {{item.price |currency}}</span></div>
+            <div><span class = "md-title title">Price : {{item.price | currency: "SEK" : 0}}</span></div>
             <br /><br />
             <span class = "md-subhead title">DESCRIPTION:</span>
             <hr />
             <span class = "md-subhead">{{item.description}}</span>
             <br /><br /><hr />
-            <md-button class="md-raised md-accent"  ng-if = "!isMyItem" ng-click = "iWantToBuy()"  ng-disabled = "!canBuy"> Buy </md-button>
+            <div ng-if = "item.isSold == '-1' || item.isSold == '' " flex = "100">
+                <md-button id = "buyButton" class="md-raised md-accent"  ng-if = "!isMyItem" ng-click = "iWantToBuy()"  
+                    ng-disabled = "!canBuy" > Buy </md-button>
+            </div>
+            <div ng-if = "item.isSold != '-1' && item.isSold !=''">
+                <md-button class="md-raised md-accent"  ng-if = "item.isSold != '-1'" ng-disabled = "1 == 1"> SOLD </md-button>
+            </div>
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "displaySendMessage">
             <textarea ng-model = "message" id = "message" cols = "35" rows = "10" wrap = "soft" placeholder = "Write your message here. Lagom loves you"></textarea>

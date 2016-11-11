@@ -101,3 +101,21 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
 {
   margin-top: 0px;
 }
+#timestampIcon
+{
+  margin-top: -4px;
+}
+#messageHeader
+{
+    margin-left: -16px;
+}
+#buyButton
+{
+  width: 250px;
+}
+#filterOptions
+{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}

@@ -81,7 +81,6 @@ angular.module('myApp.services', [])
             }).then(function successCallback(response) {
                 User.setUsername(response.data.userId);
                 User.setPassword(response.data.password);
-
                 User.storeUserLocally(response.data);
 
                 callback(response.status);
@@ -227,6 +226,56 @@ angular.module('myApp.services', [])
                   callback(response.data);
               }).then(function errorCallback(response) {
               });
+          },
+
+          /**
+           * sellItemWithID
+           */
+          sellItemWithID : function(itemID, messageID, userName, callback) {
+              $http({
+                  headers: {"User-Id" : userName},
+                  method : 'POST',
+                  url : Config.url + 'rating/set/create',
+                  data : {messageId : messageID, itemId : itemID, rating : 0}
+              }).then(function successCallback(response) {
+                  console.log('this is the response from sell item With id ');
+                  console.log(response.data);
+                  callback(response.data);
+              }).then(function errorCallback(response) {
+              });
+          },
+
+          /**
+           * getItemStatus - checks if the item is sold
+           */
+          getItemStatus : function(item) {
+              if (item.isSold != '' && item.isSold != '-1') {
+                  //item is sold
+                  return true;
+              }
+              else {
+                  return false;
+              }
+          },
+
+          getItemsWithRatings : function(ratingID) {
+              console.log('this is config url ::' + Config.url);
+              Item.getRating(ratingID, function(rating) {
+                  console.log('this is rating obj');
+                  console.log(rating);
+                  console.log('this is the end of obj');
+              });
+          },
+
+          getRating : function(ratingID, callback) {
+
+              $http({
+                  method : 'GET',
+                  url : 'localhost:9000/api/rating/' + ratingID
+              }).then(function successCallback(response) {
+                  callback(response.data);
+              }).then(function errorCallback(response) {
+              });
           }
       }
 
@@ -259,11 +308,9 @@ angular.module('myApp.services', [])
                 method : 'GET',
                 url : Config.url + this.type + '/all/' + itemID
             }).then(function successCallback(response) {
-                console.log('these are the messages ::::::');
-                console.log(response.data);
+                Message.messages = response.data;
                 callback(response.data);
             }).then(function errorCallback(error) {
-                console.log('this is the error ::');
                 console.log(error);
             });
         },
@@ -272,17 +319,54 @@ angular.module('myApp.services', [])
          * sendMessageForItemID
          */
         sendMessageForItemID : function(userID, itemID, message, callback) {
+            //create the timestamp
+            var date = new Date();
+            var time = date.getTime();
+            
             $http({
                 headers: {"User-Id" : userID},
                 method : 'POST',
                 url : Config.url + this.type + '/send',
-                data : {userId : userID, itemId : itemID, message : message, isSold : ''}
+                data : {userId : userID, itemId : itemID, message : message, isSold : '', timestamp : time}
             }).then(function successCallback(response) {
                 callback(response.data);
             }).then(function errorCallback(error) {
-                console.log('this is what went wrong with your request');
                 console.log(error);
             });
+        },
+
+        /**
+         * setMessageisSold - sets the message to sold
+         */
+        setMessageIsSold : function(messageID, callback) {
+            angular.forEach(Message.messages, function(message) { 
+                if (message.messageId == messageID) {
+                    console.log(message);
+                    return callback(Message.messages);
+                }
+            });
+        },
+
+        getUserMessages : function(userID, callback) {
+            $http({
+                method : 'GET',
+                url : Config.url + this.type + '/all/by/' + userID
+            }).then(function successCallback(response) {
+                callback(response.data);
+            }).then(function errorCallback(error) {
+                console.log(error);
+            });
+        },
+
+        getMessagesOfItemsSold : function(msgs, callback) {
+            var msgsSold = [];
+            angular.forEach(msgs, function(msg) {
+                 if (msg.isSold != "" && msg.isSold != '-1') {
+                     msgsSold.push(msg);
+                 }
+            });
+
+            return callback(msgsSold);
         }
     }
 

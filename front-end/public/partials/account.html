@@ -21,6 +21,9 @@
         </md-input-container>
     </div>
     <div ng-show = "showAccountPart == 'items'" layout = "column" flex = "100" flex-offset = "10">
+        <div layout = "row" flex = "100" >
+            <!-- filtering will go here -->
+        </div>
         <div layout = "row" layout-wrap flex-offset-sm = "0" ng-show = "myItems.length > 0">
             <md-card ng-repeat="item in myItems" flex = "30" flex-sm = "100" >
                 <md-card-title layout-align = "center center">
@@ -33,7 +36,7 @@
                         <img id = "{{item.id}}" src = "" heignt = "150" width="150" />
                     </div>
                     <div flex = "100">
-                        <span class="md-title"> {{item.price | currency}}</span>
+                        <span class="md-title"> {{item.price | currency: "SEK" : 0}}</span>
                     </div>
                 </md-card-content>
                 <md-card-actions layout = "row">

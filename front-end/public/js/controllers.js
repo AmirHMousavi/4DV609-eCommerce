@@ -12,7 +12,6 @@ controllers.MyCtrl1 = function($scope)
 {
 
     $scope.login = function() {
-        alert('this is scope speaking');
     }
 }
 
@@ -152,12 +151,11 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
         Item.getItemWithID(selectedItemID, function(item) {
             $scope.item = item;
             $scope.showItem = false;
-        
+
             //get the item image
             Item.downloadImageForItem(item.id, function(imageData) {
                 //get the item img element and update the src to show the picture
                 document.getElementById("single_item_" + item.id).src = imageData;
-                console.log("this is item id::" + item.id);
                 $scope.showItem = true;
                 $scope.$apply();
             });
@@ -297,17 +295,19 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
         $scope.showNoMessagesForItem = false;
         $scope.showItem = false;
         $scope.messages = [];
+        $scope.itemIsSold = false;
         //on pop up start
         angular.element(document).ready(function () {
             //get the selected item
             Item.getItemWithID(selectedItemID, function(item) {
                 $scope.item = item;
+                $scope.itemIsSold = Item.getItemStatus(item);
+                console.log('this is the status of the item ::' + $scope.itemIsSold);
                 //get the item image
                 Item.downloadImageForItem(item.id, function(imageData) {
                     $scope.showItem = true;
                     //get the item img element and update the src to show the picture
                     document.getElementById("single_item_" + item.id).src = imageData;
-                    console.log("this is item id::" + item.id);
                     $scope.$apply();
                 });
             });
@@ -318,14 +318,24 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
                     $scope.showNoMessagesForItem = true;
                 }
                 else {
-                    $scope.messages = messages;
+                    $scope.messages = messages;              
                 }
             });
         });
         
         //the seller clicks one of the messages to sell to the person
-        $scope.sellItem = function(itemID) {
-            alert('this is the item id :' + itemID);
+        $scope.sellItem = function(itemID, messageID) {
+            Item.sellItemWithID(itemID, messageID, User.getUserName(), function(response) {
+                //set item to sold in the front end too 
+                Message.setMessageIsSold(messageID, function(response){
+                    console.log('this is sold....... message...');
+                    console.log(response);
+                    $scope.itemIsSold = true;
+                    $mdDialog.cancel();
+                    $mdToast.show($mdToast.simple().content("ITEM WAS SOLD SUCCESSUFLLY! THE BUYER WILL BE NOTIFIED"));
+                });
+                
+            });
         };
 
         //close the mdDialog popup

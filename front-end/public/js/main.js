@@ -58,8 +58,8 @@ require(['angular', './controllers', './directives', './filters', './services', 
         $routeProvider.when('/us', {templateUrl: 'partials/us.html', controller: controllers.UsCtrl});
         $routeProvider.otherwise({redirectTo: '/items'});
       }])
-      .controller('mainController', ['$scope','$rootScope','$location','$mdToast','$mdDialog','User', 
-        function($scope,$rootScope,$location,$mdToast,$mdDialog, User){
+      .controller('mainController', ['$scope','$rootScope','$location','$mdToast','$mdDialog','User', 'Item', 'Message',
+        function($scope,$rootScope,$location,$mdToast,$mdDialog, User, Item, Message){
             $rootScope.currentUser = "";
             $rootScope.isLoggedIn = false;
 
@@ -68,6 +68,17 @@ require(['angular', './controllers', './directives', './filters', './services', 
                     //we have a logged user
                     $rootScope.currentUser = User.getLoggedUserName();
                     $rootScope.isLoggedIn = true;
+                    Message.getUserMessages($rootScope.currentUser, function(messages) {
+                        Message.getMessagesOfItemsSold(messages, function(msgs) {
+                            //console.log(msgs);
+                            var itemsAndRatings = [];
+                            angular.forEach(msgs, function(msg) {
+                                Item.getItemsWithRatings(msg.isSold, function(item) {
+
+                                });
+                            });
+                        });
+                    });
                 }
                 else {
                     $rootScope.currentUser = "";

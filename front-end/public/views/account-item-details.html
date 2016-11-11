@@ -14,7 +14,7 @@
             <div ng-show = "showItem == true ">
                 <img id = "single_item_{{item.id}}" src = "" height = "200" width = "100%" />
                 <br />
-                <div flex-offset = "5"><span class = "md-title title">Price : {{item.price |currency}}</span></div>
+                <div flex-offset = "5"><span class = "md-title title">Price : {{item.price | currency: "SEK" : 0}}</span></div>
                 <br />
                 <span flex-offset = "5" class = "md-subhead title">DESCRIPTION:</span>
                 <div flex-offset = "5"><span class = "md-subhead title">{{item.description}}</span></div>
@@ -32,14 +32,22 @@
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-if = "!showNoMessagesForItem">
             <md-list flex>
                 <div ng-repeat = "message in messages">
-                    <md-subheader class="md-no-sticky">Message sender: {{message.userId}}</md-subheader>
+                    <md-subheader id = "messageHeader" class="md-no-sticky">
+                        <div layout = "row">
+                            <img id = "timestampIcon" ng-src = "img/timestamp.svg"  class = "md-avatar" />
+                                    &nbsp{{message.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}
+                        </div>
+                    </md-subheader>
                     <md-list-item class="md-3-line" layout = "row" flex = "100" layout-align = "start start">
-                        <img md-svg-icon="communication:phone" ng-src = "img/face.svg" class = "md-avatar" />
+                        <img ng-src = "img/face.svg" style = "fill:white" class = "md-avatar" />
                         <div class="md-list-item-text">
-                            <h3>Message Header</h3>
+                            <h3>{{message.userId}}</h3>
                             <p>{{message.message}}</p>
                         </div>
-                         <md-button id = "sellBtn" class="md-raised md-accent" ng-click = "sellItem(item.id)"> Sell </md-button>
+                        <md-button id = "sellBtn" class="md-raised md-accent" ng-if = "item.isSold == '-1' || item.isSold == ''"
+                            ng-click = "sellItem(item.id, message.messageId)"> Sell </md-button>
+                        <md-button id = "sellBtn" class="md-raised md-accent" ng-if = "message.isSold != '-1' && message.isSold != ''"
+                            ng-disabled = "1 == 1" > Sold </md-button>
                     </md-list-item>
                     <md-divider ></md-divider>
                 </div>
