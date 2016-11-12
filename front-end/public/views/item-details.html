@@ -20,6 +20,7 @@
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-show = "!displaySendMessage">
             <div><span class = "md-title title">Price : {{item.price | currency: "SEK" : 0}}</span></div>
+            <div><span id = "single_item_rating_{{item.id}}" class="md-title">.....</span></div>
             <br /><br />
             <span class = "md-subhead title">DESCRIPTION:</span>
             <hr />

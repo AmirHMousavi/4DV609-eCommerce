@@ -107,6 +107,17 @@ angular.module('myApp.services', [])
         logout : function() {
             localStorage.removeItem('username');
             localStorage.removeItem('password');
+        },
+
+        getUserRating : function(userID, callback) {
+            $http({
+                method: 'GET',
+                url: Config.url + this.type + '/avgrank/' + userID,
+            }).then(function successCallback(response) {
+                callback(response.data);
+              }, function errorCallback(response) {
+                  callback(response);
+            });
         }
 
       }

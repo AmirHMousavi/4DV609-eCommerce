@@ -120,6 +120,10 @@ controllers.ItemsCtrl = function($scope, $rootScope, $q, $mdDialog, $mdToast, It
                         $scope.$apply();
                     }
                 });
+
+                User.getUserRating(item.userId, function(rating) {
+                    document.getElementById('rating_' + item.id).innerHTML = "RATING : " +rating;
+                });
             });
         });
 
@@ -232,6 +236,10 @@ controllers.ItemsCtrl = function($scope, $rootScope, $q, $mdDialog, $mdToast, It
                 document.getElementById("single_item_" + item.id).src = imageData;
                 $scope.showItem = true;
                 $scope.$apply();
+            });
+
+            User.getUserRating(item.userId, function(rating) {
+                document.getElementById('single_item_rating_' + item.id).innerHTML = "RATING : " +rating;
             });
 
             if (item.userId == User.getLoggedUserName()) {
