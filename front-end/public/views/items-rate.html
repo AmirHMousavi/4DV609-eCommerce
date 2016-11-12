@@ -1,0 +1,34 @@
+<md-dialog id = "rateDetails" aria-label = "Items To Rate" flex = "70" layout = "column">
+    <md-toolbar class= "row" flex = "100">
+        <div class="md-toolbar-tools" class= "row" flex = "100">
+            <div flex = "70"><span>RATE THE ITEM(S) YOU WON</span></div>
+                <!-- fill up the space between left and right area -->
+            <span flex></span>
+            <div>
+                <md-button class="md-fab md-mini md-primary" aria-label="exit" ng-click = "closePopUp()"> X </md-button>
+            </div>
+        </div>
+    </md-toolbar>
+    <div layout = "column" flex = "100">
+        <md-list flex>
+            <div ng-repeat = "rateItem in rateItems">
+                <md-subheader id = "messageHeader" class="md-no-sticky">
+                </md-subheader>
+                <md-list-item class="md-3-line" layout = "row" flex = "100" layout-align = "start start">
+                    <img src = "{{rateItem.item.imageData}}" width = "100px" height = "100px" />
+                    <div class="md-list-item-text">
+                        <h3>{{rateItem.item.name}}</h3>
+                        <p>{{rateItem.item.description}}</p>
+                    </div>
+
+                    <ng-md-icon id = "1_{{rateItem.ratingID}}" icon="star_rate" ng-mouseover = "onHover(1,rateItem.ratingID)" ng-click = "rateThisItem(1,rateItem.ratingID, rateItem.msg.messageId, rateItem.msg.itemId)" style="fill:grey" size="64" class = "md-avatar star"></ng-md-icon>
+                    <ng-md-icon id = "2_{{rateItem.ratingID}}" icon="star_rate" ng-mouseover = "onHover(2, rateItem.ratingID)" ng-click = "rateThisItem(2,rateItem.ratingID, rateItem.msg.messageId, rateItem.msg.itemId)" style="fill:grey" size="64" class = "md-avatar star"></ng-md-icon>
+                    <ng-md-icon id = "3_{{rateItem.ratingID}}" icon="star_rate" ng-mouseover = "onHover(3, rateItem.ratingID)" ng-click = "rateThisItem(3,rateItem.ratingID, rateItem.msg.messageId, rateItem.msg.itemId)" style="fill:grey" size="64" class = "md-avatar star"></ng-md-icon>
+                    <ng-md-icon id = "4_{{rateItem.ratingID}}" icon="star_rate" ng-mouseover = "onHover(4, rateItem.ratingID)" ng-click = "rateThisItem(4,rateItem.ratingID, rateItem.msg.messageId, rateItem.msg.itemId)" style="fill:grey" size="64" class = "md-avatar star"></ng-md-icon>
+                    <ng-md-icon id = "5_{{rateItem.ratingID}}" icon="star_rate" ng-mouseover = "onHover(5, rateItem.ratingID)" ng-click = "rateThisItem(5,rateItem.ratingID, rateItem.msg.messageId, rateItem.msg.itemId)" style="fill:grey" size="64" class = "md-avatar star"></ng-md-icon> 
+                </md-list-item>
+                <md-divider ></md-divider>
+            </div>
+        </md-list>
+    </div>
+</md-dialog>

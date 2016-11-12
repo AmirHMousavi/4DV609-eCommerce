@@ -238,8 +238,8 @@ angular.module('myApp.services', [])
                   url : Config.url + 'rating/set/create',
                   data : {messageId : messageID, itemId : itemID, rating : 0}
               }).then(function successCallback(response) {
-                  console.log('this is the response from sell item With id ');
-                  console.log(response.data);
+                 // console.log('this is the response from sell item With id ');
+                  //console.log(response.data);
                   callback(response.data);
               }).then(function errorCallback(response) {
               });
@@ -258,24 +258,46 @@ angular.module('myApp.services', [])
               }
           },
 
-          getItemsWithRatings : function(ratingID) {
-              console.log('this is config url ::' + Config.url);
+          getItemWithRatings : function(ratingID, callback) {
               Item.getRating(ratingID, function(rating) {
-                  console.log('this is rating obj');
-                  console.log(rating);
-                  console.log('this is the end of obj');
+                  if (rating.rating == 0) {
+                    var itemWithRanking = [];
+                    itemWithRanking['ratingID'] = ratingID;
+                    //still not rated yet
+                    Item.getItemWithID(rating.itemId, function(item) {
+                        itemWithRanking['item'] = item;
+                        Item.downloadImageForItem(rating.itemId, function(imageData) {
+                            itemWithRanking['item']['imageData'] = imageData;
+                            callback(itemWithRanking);
+                        });
+                    });
+                  }
+                  else {
+                      //console.log('this has been rated.....');
+                      //console.log(rating);
+                  }
               });
           },
 
-          getRating : function(ratingID, callback) {
-
+          getRating : function(ratingID, callback) {         
               $http({
                   method : 'GET',
-                  url : 'localhost:9000/api/rating/' + ratingID
+                  url : 'http://localhost:9000/api/rating/' + ratingID
               }).then(function successCallback(response) {
                   callback(response.data);
-              }).then(function errorCallback(response) {
-              });
+              }).then(function errorCallback(response) {});
+          },
+
+          rateThisItem : function(rate, ratingID, messageID, itemID, userName, callback) {
+              //console.log('rate :'+rate+' ratingID:'+ratingID+' messageID:'+messageID+'itemID:'+itemID);
+              $http({
+                  headers: {"User-Id" : userName},
+                  method : 'POST',
+                  url : 'http://localhost:9000/api/rating/set/' + ratingID,
+                  data : {rankingId: ratingID, messageId: messageID, itemId : itemID, rating : rate}
+              }).then(function successCallback(response) {
+                  callback(response.data);
+              }).then(function errorCallback(response) {});
           }
       }
 
@@ -303,7 +325,7 @@ angular.module('myApp.services', [])
          * getMessagesForItemID - gets all the messages for the selected item
          */
         getMessagesForItemID : function (itemID, callback) {
-            console.log(Config.url + this.type + '/all/' + itemID);
+            //console.log(Config.url + this.type + '/all/' + itemID);
             $http({
                 method : 'GET',
                 url : Config.url + this.type + '/all/' + itemID
@@ -341,7 +363,7 @@ angular.module('myApp.services', [])
         setMessageIsSold : function(messageID, callback) {
             angular.forEach(Message.messages, function(message) { 
                 if (message.messageId == messageID) {
-                    console.log(message);
+                    //console.log(message);
                     return callback(Message.messages);
                 }
             });

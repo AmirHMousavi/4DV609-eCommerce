@@ -42,7 +42,7 @@ require(['angular', './controllers', './directives', './filters', './services', 
 
     // Declare app level module which depends on filters, and services
 
-    angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'ngRoute', 'ngMaterial']).
+    angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'ngRoute', 'ngMaterial','ngMdIcons']).
         config(['$routeProvider','$mdThemingProvider', function($routeProvider, $mdThemingProvider) {
              $mdThemingProvider.theme('default')
                 .primaryPalette('red')
@@ -58,25 +58,42 @@ require(['angular', './controllers', './directives', './filters', './services', 
         $routeProvider.when('/us', {templateUrl: 'partials/us.html', controller: controllers.UsCtrl});
         $routeProvider.otherwise({redirectTo: '/items'});
       }])
-      .controller('mainController', ['$scope','$rootScope','$location','$mdToast','$mdDialog','User', 'Item', 'Message',
-        function($scope,$rootScope,$location,$mdToast,$mdDialog, User, Item, Message){
+      .controller('mainController', ['$scope','$rootScope','$q','$location','$mdToast','$mdDialog','User', 'Item', 'Message',
+        function($scope, $rootScope, $q, $location, $mdToast, $mdDialog, User, Item, Message){
             $rootScope.currentUser = "";
             $rootScope.isLoggedIn = false;
-
             angular.element(document).ready(function () {
                 if (User.getLoggedUserName() != undefined && User.getLoggedUserName != null) {
                     //we have a logged user
                     $rootScope.currentUser = User.getLoggedUserName();
                     $rootScope.isLoggedIn = true;
                     Message.getUserMessages($rootScope.currentUser, function(messages) {
-                        Message.getMessagesOfItemsSold(messages, function(msgs) {
-                            //console.log(msgs);
+                         Message.getMessagesOfItemsSold(messages, function(msgs) {
                             var itemsAndRatings = [];
-                            angular.forEach(msgs, function(msg) {
-                                Item.getItemsWithRatings(msg.isSold, function(item) {
-
+                            if (msgs.length > 0) {
+                                var defer = $q.defer();
+                                angular.forEach(msgs, function(msg) {
+                                    Item.getItemWithRatings(msg.isSold, function(item) {
+                                        //console.log(response);
+                                        item['msg'] = msg;
+                                        defer.resolve(itemsAndRatings.push(item));
+                                    });
                                 });
-                            });
+
+                                defer.promise.then(function(result) {
+                                    //if we are still logged in 
+                                    if ($rootScope.isLoggedIn == true) {
+                                        $mdDialog.show({
+                                            locals : {itemsToRate: itemsAndRatings},
+                                            controller : itemsToRateCtrl,
+                                            templateUrl : 'views/items-rate.html',
+                                        });
+                                    }
+                                });
+                            }
+                            else {
+                               //alert('no rating...');
+                            }
                         });
                     });
                 }
@@ -85,6 +102,54 @@ require(['angular', './controllers', './directives', './filters', './services', 
                     $rootScope.isLoggedIn = false;
                 }
             });
+
+            function itemsToRateCtrl($scope, $rootScope, $mdToast, itemsToRate) {
+
+                //console.log(itemsToRate);
+                $scope.rateItems = itemsToRate;
+                //console.log($scope.rateItems);
+                $rootScope.itemRated = [];
+                $scope.closePopUp = function() {
+                    $mdDialog.cancel();
+                }
+
+                $scope.rateThisItem = function(rate, rateID, messageID, itemID) {
+                    $rootScope.itemRated.push(rateID);
+                    Item.rateThisItem(rate, rateID, messageID, itemID, User.getLoggedUserName(), function(response) {
+                        //console.log('the rating is done t his is the response');
+                        console.log(response);
+                        if (response.done == true) {
+                            $mdToast.show($mdToast.simple().content("ITEM WAS RATED SUCCESSFULLY"));
+                        }
+                    });
+                }
+
+                $scope.onHover = function(rateIndex, row) {
+                    for (var i = 1; i <= 5; i++) {
+                        var starName = i.toString() + '_' + row;
+                        if ($rootScope.itemRated.indexOf(row) == -1) {
+                            if (i <= parseInt(rateIndex)) {
+                                document.getElementById(starName).style.fill = "yellow";
+                            }
+                            else {
+                                document.getElementById(starName).style.fill = "gray";
+                            }
+                        }
+                    }
+                    
+                    //clear the other rows
+                    angular.forEach($scope.rateItems, function(item) {
+                        if ($rootScope.itemRated.indexOf(item.ratingID) == -1) {
+                            if (item.ratingID != row) {
+                                for (var j = 1; j <= 5; j++) {
+                                    var starName = j.toString() + '_' + item.ratingID;
+                                    document.getElementById(starName).style.fill = "gray";
+                                }
+                            }
+                        }
+                    });
+                }
+            }
 
             //logout triggered
             $scope.logMeOut = function() {

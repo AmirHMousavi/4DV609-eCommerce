@@ -119,3 +119,6 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
   margin: 0;
   padding: 0;
 }
+.star:hover {
+    cursor: pointer;
+}

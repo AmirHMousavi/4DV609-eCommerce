@@ -91,7 +91,7 @@ controllers.LoginCtrl = function($scope, $rootScope, $mdToast, Config, User)
 
 controllers.LoginCtrl.$inject = ['$scope', '$rootScope', '$mdToast', 'Config','User'];
 
-controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, User) 
+controllers.ItemsCtrl = function($scope, $rootScope, $q, $mdDialog, $mdToast, Item, Message, User) 
 {
     $scope.showItems = false;
     $scope.items = [];
@@ -122,7 +122,81 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
                 });
             });
         });
+
+        //after we get the items we check if we have something to rate
+        Message.getUserMessages($rootScope.currentUser, function(messages) {
+            Message.getMessagesOfItemsSold(messages, function(msgs) {
+                var itemsAndRatings = [];
+                if (msgs.length > 0) {
+                    var defer = $q.defer();
+                    angular.forEach(msgs, function(msg) {
+                        Item.getItemWithRatings(msg.isSold, function(item) {
+                            //console.log(response);
+                            item['msg'] = msg;
+                            defer.resolve(itemsAndRatings.push(item));
+                        });
+                    });
+
+                    defer.promise.then(function(result) {
+                        //if we are still logged in 
+                        if ($rootScope.isLoggedIn == true) {
+                            $mdDialog.show({
+                                locals : {itemsToRate: itemsAndRatings},
+                                controller : itemsToRateCtrl,
+                                templateUrl : 'views/items-rate.html',
+                            });
+                        }
+                    });
+                }
+            });
+     });
     });
+    //this is also defined in the MAIN ... its not the best practice
+    function itemsToRateCtrl($scope, $rootScope, $mdToast, itemsToRate) {
+        //console.log(itemsToRate);
+        $scope.rateItems = itemsToRate;
+        //console.log($scope.rateItems);
+        $rootScope.itemRated = [];
+        $scope.closePopUp = function() {
+            $mdDialog.cancel();
+        }
+
+        $scope.rateThisItem = function(rate, rateID, messageID, itemID) {
+            $rootScope.itemRated.push(rateID);
+            Item.rateThisItem(rate, rateID, messageID, itemID, User.getLoggedUserName(), function(response) {
+                //console.log('the rating is done t his is the response');
+                console.log(response);
+                if (response.done == true) {
+                    $mdToast.show($mdToast.simple().content("ITEM WAS RATED SUCCESSFULLY"));
+                }
+            });
+        }
+
+        $scope.onHover = function(rateIndex, row) {
+            for (var i = 1; i <= 5; i++) {
+                var starName = i.toString() + '_' + row;
+                if ($rootScope.itemRated.indexOf(row) == -1) {
+                    if (i <= parseInt(rateIndex)) {
+                        document.getElementById(starName).style.fill = "yellow";
+                    }
+                    else {
+                        document.getElementById(starName).style.fill = "gray";
+                    }
+                }
+            }
+            //clear the other rows
+            angular.forEach($scope.rateItems, function(item) {
+                if ($rootScope.itemRated.indexOf(item.ratingID) == -1) {
+                    if (item.ratingID != row) {
+                        for (var j = 1; j <= 5; j++) {
+                            var starName = j.toString() + '_' + item.ratingID;
+                            document.getElementById(starName).style.fill = "gray";
+                        }
+                    }
+                }
+            });
+        }
+    }
 
     /**
      * itemDetails - shows the popup with the information of the item
@@ -187,7 +261,7 @@ controllers.ItemsCtrl = function($scope, $mdDialog, $mdToast, Item, Message, Use
     }
     
 }
-controllers.ItemsCtrl.$inject = ['$scope', '$mdDialog', '$mdToast', 'Item', 'Message', 'User'];
+controllers.ItemsCtrl.$inject = ['$scope', '$rootScope', '$q', '$mdDialog', '$mdToast', 'Item', 'Message', 'User'];
 
 controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdToast, $mdDialog) 
 {
