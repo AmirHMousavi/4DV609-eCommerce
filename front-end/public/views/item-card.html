@@ -1,20 +1,29 @@
-<div layout = "row">
-    <md-card ng-repeat="item in items | filter:search" flex = "30" flex-sm = "100">
-        <img ng-src="img/md_bg.jpg" class="md-card-image cardImg" alt="Washed Out">
-        <div id = "itemTitle" flex = "100" layout-align = "center center">
-            <center><span class = "md-display-1">{{item.name |uppercase}} </span></center>
-        </div> 
-        <div id = "itemExtraInfo" flex = "100" layout = "row" layout-align = "space around">
-            <div layout = "row">
-                <md-icon md-svg-icon="img/face.svg" style="fill:white"></md-icon>
-                <span class = "md-title">{{item.userId}} </span>
+<div layout = "row" layout-wrap >
+    <md-card id = "itemCard" ng-repeat="item in items | filter:search" flex = "30" flex-sm = "100" layout = "column">
+        <md-card-title-text layout-align = "center center" flex = "10">
+            <center><span class="md-headline title">{{item.name}}</span></center>
+        </md-card-title-text>
+        <md-card-content layout = "column" flex = "75">
+            <div flex = "70" id = "imgDiv" layout = "row">
+                <div layout-align = "center center">
+                    <img id = "{{item.id}}" src = ""  height = "210px" width="100%" />
+                </div>
             </div>
-            <div layout = "row" >
-                <span class = "md-title">{{item.price | currency: "SEK" : 0}} </span>
+            <div flex = "15" layout = "row" >
+                <div layout-align = "center center" flex = "100">
+                    <center><span class="md-headline title"> {{item.price | currency: "SEK" : 0}}</span></center>
+                </div>
             </div>
-        </div>
-        <div id = "itemImg" flex = "100" layout = "column">
-            <img src="http://www.pngall.com/wp-content/uploads/2016/04/Table-High-Quality-PNG.png" heignt = "150" width="150" />
-        </div>
+            <div flex = "15" layout = "row">
+                <div layout-align = "center center" flex = "100">
+                    <center><span id = "rating_{{item.id}}" class="md-title title">.....</span></center>
+                </div>
+            </div>
+        </md-card-content>
+        <md-card-actions flex = "15" layout = "row" layout-align = "center center">
+            <div layout-align = "center center" flex = "100" layout = "row">
+                <md-button flex = "100" class = "md-primary md-raised" ng-click = "itemDetails(item.id)">View Details</md-button>
+            </div>
+        </md-card-actions>
     </md-card>
 </div>

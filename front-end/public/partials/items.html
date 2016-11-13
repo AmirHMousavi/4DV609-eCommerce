@@ -10,30 +10,7 @@
        </div>
     </div>
     <div layout = "row" layout-wrap flex-offset = "10" flex-offset-sm = "0" ng-show = "showItems == true">
-        <!--<item-card></item-card>-->
-        <md-card ng-repeat="item in items | filter:search" flex = "30" flex-sm = "100" layout = "column">
-           <md-card-title layout-align = "center center" flex = "20">
-                <md-card-title-text id = "cardTitleText" layout-align = "center center">
-                    <center><span class="md-headline title">{{item.name}}</span></center>
-                </md-card-title-text>
-            </md-card-title>
-            <md-card-content layout = "column" layout-align = "center center" flex = "60">
-                <div flex = "50" > 
-                    <img id = "{{item.id}}" src = "" heignt = "400px" width = "150px" />
-                </div>
-                <div flex = "25">
-                    <span class="md-title"> {{item.price | currency: "SEK" : 0}}</span>
-                </div>
-                <div flex = "25">
-                    <span id = "rating_{{item.id}}" class="md-title">.....</span>
-                </div>
-            </md-card-content>
-            <md-card-actions id = "cardFooter" layout = "row" flex = "20">
-                <div layout = "row" flex = "100">
-                    <md-button flex = "100" class = "md-primary md-raised" ng-click = "itemDetails(item.id)">View Details</md-button>
-                </div>
-            </md-card-actions>
-        </md-card>
+        <item-card></item-card>
     </div>
     <div layout = "row" flex = "100" layout-align = "center center" ng-show = "showItems == false">
         <md-progress-circular md-mode="indeterminate"></md-progress-circular>

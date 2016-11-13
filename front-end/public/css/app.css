@@ -32,6 +32,11 @@
   padding: 0;
 }
 
+html
+{
+  background-color: #EEEEEE;
+}
+
 #body
 {
     background-color: #EEEEEE;
@@ -121,4 +126,10 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
 }
 .star:hover {
     cursor: pointer;
+}
+#itemCard
+{
+  height: 450px;
+  overflow: hidden;
+  position: relative;
 }

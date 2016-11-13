@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style = "background-color: #EEEEEE;">
 <head>
   <meta charset="utf-8">
   <title>My AngularJS App</title>
@@ -11,7 +11,12 @@
 <body id="body" ng-controller="mainController" ng-cloak>
   <md-toolbar class= "row" flex = "100">
     <div class="md-toolbar-tools" class= "row" flex = "100">
-      <div flex = "20" hide show-gt-md flex><a href="#/items"><span>E-Commerce App</span></a></div>
+      <div flex = "20" hide show-gt-md flex>
+        <a href="#/items">
+          <img id = "appLogo" src="img/app-icon.png" height = "30px" width = "30px" />
+          <span>E-Commerce App</span>
+        </a>
+      </div>
         <!-- fill up the space between left and right area -->
       <span flex></span>
       <md-tabs id = "main_tabs" md-dynamic-height md-border-bottom flex="80" md-center-tabs ng-if = "currentUser !== ''">

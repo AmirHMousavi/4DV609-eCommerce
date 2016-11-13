@@ -45,8 +45,8 @@ require(['angular', './controllers', './directives', './filters', './services', 
     angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'ngRoute', 'ngMaterial','ngMdIcons']).
         config(['$routeProvider','$mdThemingProvider', function($routeProvider, $mdThemingProvider) {
              $mdThemingProvider.theme('default')
-                .primaryPalette('red')
-                .accentPalette('deep-purple');
+                .primaryPalette('amber')
+                .accentPalette('blue-grey');
 
         $routeProvider.when('/view1', {templateUrl: 'partials/partial1.html', controller: controllers.MyCtrl1});
         $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: controllers.MyCtrl2});
