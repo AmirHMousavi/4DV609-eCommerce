@@ -31,7 +31,7 @@
         </div>
         <div id = "itemInfoDiv" layout = "column" flex = "50" layout-margin ng-if = "!showNoMessagesForItem">
             <md-list flex>
-                <div ng-repeat = "message in messages">
+                <div ng-repeat = "message in messages" ng-if = "selectedItemID == message.itemId">
                     <md-subheader id = "messageHeader" class="md-no-sticky">
                         <div layout = "row">
                             <img id = "timestampIcon" ng-src = "img/timestamp.svg"  class = "md-avatar" />
@@ -44,7 +44,8 @@
                             <h3>{{message.userId}}</h3>
                             <p>{{message.message}}</p>
                         </div>
-                        <md-button id = "sellBtn" class="md-raised md-accent" ng-if = "item.isSold == '-1' || item.isSold == ''"
+                        <md-button id = "sellBtn" class="md-raised md-accent" 
+                            ng-if = "(item.isSold == '-1' || item.isSold == '') && (canSell == true)"
                             ng-click = "sellItem(item.id, message.messageId)"> Sell </md-button>
                         <md-button id = "sellBtn" class="md-raised md-accent" ng-if = "message.isSold != '-1' && message.isSold != ''"
                             ng-disabled = "1 == 1" > Sold </md-button>

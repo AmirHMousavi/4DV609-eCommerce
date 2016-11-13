@@ -293,17 +293,14 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
 
     function itemsIAmInterestedOn(callback) {
         Message.getAllMessagesForUser($scope.username, function(messages) {
-            Item.getAllItems(function(items){
+            Item.getAllItems(function(items) {
                 //after we have all the items and all the user messages
                 //we loop through messages and get the items with the id of item in message
                 angular.forEach(messages, function(message) {
                     angular.forEach(items, function(item) {
-                        if (message.itemId == item.id) {
+                        if (message.itemId == item.id && $scope.username == message.userId) {
                             //check if the item exists in the array
                             itemExists(item.id, $scope.itemsIamInterestedOn, function(response) {
-                                console.log('this is the response :::');
-                                console.log(response);
-                                console.log('this is the response :::');
                                 if (response.exists == false) {
                                     //i am interested in this 
                                     $scope.itemsIamInterestedOn.push(item);
@@ -422,20 +419,22 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
     };
 
     //when view details is clicked
-    $scope.seeItemDetails = function(itemID) {
+    $scope.seeItemDetails = function(itemID, viewOption) {
         $mdDialog.show({
-           locals : {selectedItemID: itemID},
+           locals : {selectedItemID: itemID, option : viewOption},
            controller : itemSelectedCtrl,
            templateUrl : 'views/account-item-details.html',
         });
     };
 
     //the controller that controlls the popup
-    var itemSelectedCtrl = function($scope, selectedItemID) {
+    var itemSelectedCtrl = function($scope, selectedItemID, option) {
         $scope.showNoMessagesForItem = false;
         $scope.showItem = false;
         $scope.messages = [];
         $scope.itemIsSold = false;
+        $scope.canSell = false;
+        $scope.selectedItemID = selectedItemID;
         //on pop up start
         angular.element(document).ready(function () {
             //get the selected item
@@ -452,15 +451,33 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
                 });
             });
 
-            //we should get the messages for this item
-            Message.getMessagesForItemID(selectedItemID, function(messages) {
-                if (messages.length == 0) {
-                    $scope.showNoMessagesForItem = true;
-                }
-                else {
-                    $scope.messages = messages;              
-                }
-            });
+            if (option == 'all') {
+                $scope.canSell = true;
+                //we should get the messages for this item
+                Message.getMessagesForItemID(selectedItemID, function(messages) {
+                    if (messages.length == 0) {
+                        $scope.showNoMessagesForItem = true;
+                    }
+                    else {
+                        $scope.messages = messages;              
+                    }
+                });
+            }
+            else if (option == 'mine') {
+                $scope.canSell = false;
+                //we should get only users messages for this item 
+                //this is called in the tab where we show the items 
+                //the user has been interested on
+                Message.getAllMessagesForUser( User.getLoggedUserName(), function(messages) {
+                    if (messages.length == 0) {
+                        $scope.showNoMessagesForItem = true;
+                    }
+                    else {
+                        $scope.messages = messages;              
+                    }
+                });
+            }
+            
         });
         
         //the seller clicks one of the messages to sell to the person

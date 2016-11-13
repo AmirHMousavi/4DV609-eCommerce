@@ -7,7 +7,7 @@
         </md-tab>
         <md-tab ng-click = "changeAccountView('create')"><span class="tabItemLabel">Create Item</span>
         </md-tab>
-        <md-tab ng-click = "changeAccountView('interested')"><span class="tabItemLabel">Items Interested On</span>
+        <md-tab ng-click = "changeAccountView('interested')"><span class="tabItemLabel">Bought Items</span>
         </md-tab>
     </md-tabs>
 </div>
@@ -49,7 +49,7 @@
                 </md-card-content>
                 <md-card-actions flex = "15" layout = "row" layout-align = "center center">
                     <div layout-align = "center center" flex = "100" layout = "row">
-                        <md-button flex = "100" class = "md-primary md-raised" ng-click = "seeItemDetails(item.id)">View Details</md-button>
+                        <md-button flex = "100" class = "md-primary md-raised" ng-click = "seeItemDetails(item.id, 'all')">View Details</md-button>
                     </div>
                 </md-card-actions>
             </md-card>
@@ -102,13 +102,13 @@
                 </md-card-content>
                 <md-card-actions flex = "15" layout = "row" layout-align = "center center">
                     <div layout-align = "center center" flex = "100" layout = "row">
-                        <md-button flex = "100" class = "md-primary md-raised" ng-click = "seeItemDetails(item.id)">View Details</md-button>
+                        <md-button flex = "100" class = "md-primary md-raised" ng-click = "seeItemDetails(item.id, 'mine')">View Details</md-button>
                     </div>
                 </md-card-actions>
             </md-card>
         </div>
         <div flex = "100" ng-if = "itemsIamInterestedOn.length == 0">
-            <center><span class = "md-display-2 title">YOU HAVEN'T BEEN INTERESTED IN ANY ITEM YET!</span></center>
+            <center><span class = "md-display-2 title">YOU HAVEN'T BOUGHT ANY ITEM YET!</span></center>
         </div>
     </div>
 </div>
