@@ -1,6 +1,7 @@
 # Message Service
 Message Service provides functionality for sending and receiving a message. Descriptor of Message Service is defined with service calls: sendMessage(), getMessage(), getAllMessagesByItemId(). These are methods defined in the message service that return service call.
-Service calls
+
+####Service calls
 
 A service call for an entity has a request and a response entity.
 
