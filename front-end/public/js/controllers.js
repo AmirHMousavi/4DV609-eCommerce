@@ -122,7 +122,7 @@ controllers.ItemsCtrl = function($scope, $rootScope, $q, $mdDialog, $mdToast, It
                 });
 
                 User.getUserRating(item.userId, function(rating) {
-                    document.getElementById('rating_' + item.id).innerHTML = "RATING : " +rating;
+                    document.getElementById('rating_' + item.id).innerHTML = "Rating : " +rating;
                 });
             });
         });
@@ -276,10 +276,12 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
     $scope.isLoggedIn = false;
 
     $scope.myItems = [];
+    $scope.itemsIamInterestedOn = [];
     $scope.showAccountPart = 'profile';
 
     $scope.username = User.getLoggedUserName();
     $scope.password = User.getPassword();
+    $scope.rating = "..";
 
     $scope.itemName = "";
     $scope.itemDescription = "";
@@ -289,9 +291,61 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
         $scope.showAccountPart = view;
     };
 
+    function itemsIAmInterestedOn(callback) {
+        Message.getAllMessagesForUser($scope.username, function(messages) {
+            Item.getAllItems(function(items){
+                //after we have all the items and all the user messages
+                //we loop through messages and get the items with the id of item in message
+                angular.forEach(messages, function(message) {
+                    angular.forEach(items, function(item) {
+                        if (message.itemId == item.id) {
+                            //check if the item exists in the array
+                            itemExists(item.id, $scope.itemsIamInterestedOn, function(response) {
+                                console.log('this is the response :::');
+                                console.log(response);
+                                console.log('this is the response :::');
+                                if (response.exists == false) {
+                                    //i am interested in this 
+                                    $scope.itemsIamInterestedOn.push(item);
+                                    //get the images for the items
+                                    Item.downloadImageForItem(item.id, function(imgData) {
+                                        document.getElementById("item_interested_"+item.id).src = imgData;
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    }
+
+    function itemExists(itemID, items, callback) {
+        var counter = items.length;
+        if (counter > 0 ) {
+            angular.forEach(items, function(item) {
+                if (item.id == itemID) {
+                    return callback({exists : true});
+                }
+
+                if (counter == 1) {
+                    return callback({exists : false});
+                }
+            });
+        }
+        else {
+            return callback({exists : false});
+        }
+    }
+
     //triggered on page load
     angular.element(document).ready(function () {
         if ($rootScope.isLoggedIn) {
+            //get the user rating
+            User.getUserRating($scope.username, function(rating) {
+                $scope.rating = rating;
+            });
+
             Item.getMyItems($scope.username, function(response) {
                 $scope.myItems = response;
                 var itemImagesFetched = 0;                
@@ -307,15 +361,19 @@ controllers.AccountCtrl = function($scope, $rootScope, User, Item, Message, $mdT
                                 //all item images are shown now we can 
                                 //display the items
                                 $scope.showItems = true;
-                                //since we retrieve the images using web sockets
-                                //the angular digest system isn't aware of the changes
-                                //and it wont update the HTML if we don't call $scope.apply()
-                                $scope.$apply();
                             }
                         }
+                        //since we retrieve the images using web sockets
+                        //the angular digest system isn't aware of the changes
+                        //and it wont update the HTML if we don't call $scope.apply()
+                        $scope.$apply();
                     });
                 });
             });
+
+            //now get all the items
+            itemsIAmInterestedOn();
+
             $scope.isLoggedIn = true;
         }
         else {

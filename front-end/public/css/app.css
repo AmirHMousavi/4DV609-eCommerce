@@ -133,3 +133,27 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
   overflow: hidden;
   position: relative;
 }
+#itemCard:hover {
+  cursor: pointer;
+}
+#item_details_container
+{
+  height: 400px;
+}
+#usCard
+{
+  height : 400px;
+}
+#personal_image
+{
+  border-radius:99px;
+ -moz-border-radius:99px;
+ -webkit-border-radius:99px;
+  color:#fff;
+  border:3px #fff solid;
+  display:inline-block;
+  padding:2px 2px 2px 2px ;
+  margin:3px;
+  font-family:arial;
+  font-weight:bold;
+}

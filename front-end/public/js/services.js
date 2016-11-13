@@ -349,6 +349,20 @@ angular.module('myApp.services', [])
         },
 
         /**
+         * getAllMessagesForUser
+         */
+        getAllMessagesForUser : function(userID, callback) {
+            $http({
+                method : 'GET',
+                url : Config.url + this.type + '/all/by/' + userID
+            }).then(function successCallback(response) {
+                callback(response.data);
+            }).then(function errorCallback(error) {
+                console.log(error);
+            });
+        },
+
+        /**
          * sendMessageForItemID
          */
         sendMessageForItemID : function(userID, itemID, message, callback) {
