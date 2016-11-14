@@ -6,7 +6,8 @@
         <md-card-content layout = "column" flex = "75">
             <div flex = "70" id = "imgDiv" layout = "row">
                 <div layout-align = "center center">
-                    <img id = "{{item.id}}" src = ""  height = "210px" width="100%" style = "min-width: 100px" />
+                    <!--<img id = "{{item.id}}" src = ""  height = "210px" width="100%" style = "min-width: 100px" />-->
+                    <img id = "itemid" src = "{{item.dataURL}}"  height = "210px" width="100%" style = "min-width: 100px" />
                 </div>
             </div>
             <div flex = "15" layout = "row" >
@@ -16,7 +17,8 @@
             </div>
             <div flex = "15" layout = "row">
                 <div layout-align = "center center" flex = "100">
-                    <center><span id = "rating_{{item.id}}" class="md-title title">.....</span></center>
+                    <!--<center><span id = "rating_{{item.id}}" class="md-title title">.....</span></center>-->
+                    <center><span id = "rating" class="md-title title">RATING : {{item.userRating}}</span></center>
                     <md-tooltip>
                         THIS IS THE SELLER RATING
                     </md-tooltip>

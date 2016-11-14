@@ -108,12 +108,14 @@ controllers.ItemsCtrl = function($scope, $rootScope, $q, $mdDialog, $mdToast, It
                 itemImagesFetched ++;
                 Item.downloadImageForItem(item.id, function(imageData) {
                     //get the item img element and update the src to show the picture
-                    document.getElementById(item.id).src = imageData;
+                    //document.getElementById(item.id).src = imageData;
+                    item['dataURL'] = imageData;
                     //check if all item images have been fetched
                     if (itemImagesFetched == $scope.items.length) {
                         //all item images are shown now we can 
                         //display the items
                         $scope.showItems = true;
+                        //console.log($scope.items);
                         //since we retrieve the images using web sockets
                         //the angular digest system isn't aware of the changes
                         //and it wont update the HTML if we don't call $scope.apply()
@@ -122,7 +124,8 @@ controllers.ItemsCtrl = function($scope, $rootScope, $q, $mdDialog, $mdToast, It
                 });
 
                 User.getUserRating(item.userId, function(rating) {
-                    document.getElementById('rating_' + item.id).innerHTML = "Rating : " +rating;
+                    item['userRating'] = rating;
+                    //document.getElementById('rating_' + item.id).innerHTML = "Rating : " +rating;
                 });
             });
         });
